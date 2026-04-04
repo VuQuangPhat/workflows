@@ -34,29 +34,28 @@ def get_ai_report(news_data):
     
     genai.configure(api_key=api_key)
     
+    # Prompt đã được tối ưu để đảm bảo nội dung song ngữ ở Mục 5 & 7
     prompt = f"""
 Bạn là chuyên gia phân tích chiến lược M&A và ESG phục vụ Vũ Quang Phát (10 năm kinh nghiệm Pháp lý, ULAW).
 Dữ liệu: {news_data}
 
-HÃY SOẠN BÁO CÁO: Markdown, NO EMOJI, UK English.
+HÃY SOẠN BÁO CÁO: Markdown, NO EMOJI.
+NGÔN NGỮ CHÍNH: UK English. 
+RIÊNG MỤC 5 VÀ 7: Bắt buộc trình bày SONG NGỮ (Anh - Việt).
 
-YÊU CẦU:
-1. TRÌNH ĐỘ TIẾNG ANH: Mục 5 và 7 chỉ dùng từ vựng/thành ngữ mức độ B2.
-2. SONG NGỮ: Mục 5 và 7 PHẢI có tiếng Việt giải nghĩa và dịch ví dụ.
-3. THỂ THỨC: Chuyên nghiệp, logic, canh lề chỉn chu.
-
-CẤU TRÚC:
+CẤU TRÚC BÁO CÁO:
 ## 1. TỔNG QUAN M&A (DEAL FLOWS)
 ## 2. ESG COMPLIANCE & GOVERNANCE (Kèm bảng tóm tắt)
 ## 3. PHÂN TÍCH PHÁP LÝ (IRAC METHOD)
 ## 4. KỸ NĂNG LẬP LUẬN (LOGIC)
 ## 5. UK IDIOM OF THE DAY (LEVEL B2)
 - **Thành ngữ:** "[Idiom]"
-- **Nghĩa:** [English] - ([Tiếng Việt])
-- **Ví dụ:** [English] - ([Tiếng Việt])
+- **Nghĩa:** [English definition] - ([Nghĩa tiếng Việt])
+- **Ví dụ:** [English example] - ([Dịch ví dụ sang tiếng Việt])
 ## 6. TƯ DUY PHẢN BIỆN (RISK & OPPORTUNITY)
 ## 7. TỪ VỰNG CHUYÊN NGÀNH (UK B2)
-- Trình bày bảng: **Từ vựng** | /IPA/ | Nghĩa (Anh-Việt) | Ví dụ (Anh-Việt).
+- Trình bày bảng: **Từ vựng** | /IPA/ | Nghĩa (Anh-Việt) | Ví dụ (Anh-Việt). 
+(Lưu ý: Cột Nghĩa và Ví dụ PHẢI có tiếng Việt).
 ## 8. TRÍCH DẪN NGUỒN
 """
 
@@ -84,9 +83,9 @@ def send_email(markdown_content):
     msg["From"] = sender
     msg["To"] = sender
     
+    # Render Markdown sang HTML
     html_body = markdown.markdown(markdown_content, extensions=['extra', 'nl2br', 'tables'])
     
-    # ĐÂY LÀ ĐOẠN PHÁT CẦN COPY CẨN THẬN:
     full_html = f"""
     <html>
       <head>
@@ -113,13 +112,14 @@ def send_email(markdown_content):
     </html>
     """
     
-    msg.attach(MIMEText(full_html, "html"))
+    # QUAN TRỌNG: Thêm "utf-8" để hiển thị tiếng Việt chuẩn xác
+    msg.attach(MIMEText(full_html, "html", "utf-8"))
     
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print("Success!")
+        print("Success! Email sent with UTF-8 encoding.")
     except Exception as e:
         print(f"Error: {e}")
 
