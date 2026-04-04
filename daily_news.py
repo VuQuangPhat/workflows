@@ -47,6 +47,7 @@ CẤU TRÚC:
 ## 3. PHÂN TÍCH TÌNH HUỐNG (IRAC METHOD)
 ## 4. KỸ NĂNG LẬP LUẬN (LOGIC)
 ## 5. UK IDIOM OF THE DAY (LEVEL B2)
+- Trình bày song ngữ Anh-Việt.
 ## 6. TƯ DUY PHẢN BIỆN (RISK & OPPORTUNITY)
 ## 7. TỪ VỰNG TIẾNG ANH CHUYÊN NGÀNH (UK B2)
 - Trình bày bảng: Từ vựng | /IPA/ | Nghĩa | Ví dụ (Song ngữ).
@@ -68,7 +69,7 @@ def send_email(markdown_content):
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[CHIẾN LƯỢC] BÁO CÁO TỔNG HỢP #{run_num}"
+    msg["Subject"] = f"[CHIẾN LƯỢC] BÁO CÁO TỔNG HỢP #{run_num}"
     msg["From"] = f"Strategic AI Assistant <{sender}>"
     msg["To"] = sender
     
@@ -78,36 +79,12 @@ def send_email(markdown_content):
     <html>
       <head>
         <style>
-            body {{ 
-                font-family: 'Times New Roman', serif; 
-                background-color: #f4f7f6; 
-                padding: 30px; 
-                line-height: 1.8; 
-                color: #1a1a1a;
-            }}
-            .container {{ 
-                max-width: 850px; 
-                margin: 0 auto; 
-                background: #fff; 
-                padding: 50px; 
-                border-top: 10px solid #002b5e; 
-                box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            }}
-            h1 {{ color: #002b5e; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
-            h2 {{ color: #002b5e; border-bottom: 2px solid #002b5e; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
-            
-            /* PHẦN QUAN TRỌNG: Canh lề đều hai bên cho đoạn văn và danh sách */
-            p, li {{ 
-                text-align: justify; 
-                text-justify: inter-word; 
-                margin-bottom: 15px; 
-                font-size: 16px; 
-            }}
-            
+            body {{ font-family: 'Times New Roman', serif; background-color: #f4f7f6; padding: 30px; line-height: 1.8; }}
+            .container {{ max-width: 850px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #002b5e; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }}
+            h1, h2 {{ color: #002b5e; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-            table, th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
+            table, th, td {{ border: 1px solid #ddd; padding: 10px; }}
             th {{ background-color: #f8f9fa; }}
-            .footer {{ text-align: center; font-size: 11px; color: #888; margin-top: 50px; border-top: 1px solid #eee; padding-top: 15px; }}
         </style>
       </head>
       <body>
@@ -120,6 +97,7 @@ def send_email(markdown_content):
       </body>
     </html>
     """
+    # ĐỊNH DẠNG UTF-8 BẮT BUỘC ĐỂ KHÔNG LỖI TIẾNG VIỆT
     msg.attach(MIMEText(full_html, "html", "utf-8"))
     
     try:
