@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def get_comprehensive_news():
+    """Thu thập và cắt ngắn nội dung để tiết kiệm Quota/Token"""
     sources = {
         "World (BBC)": "https://feeds.bbci.co.uk/news/world/rss.xml",
         "World (NYT)": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
@@ -20,14 +21,18 @@ def get_comprehensive_news():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
-            for entry in feed.entries[:8]:
+            # Giảm xuống 6 tin để tránh prompt quá dài gây lỗi quota
+            for entry in feed.entries[:6]:
                 desc = entry.get('summary', entry.get('description', ''))
-                summary += f"Tiêu đề: {entry.title}\nTóm tắt: {desc}\nLink: {entry.link}\n\n"
+                # Cắt ngắn mô tả (tránh gửi quá nhiều text thô lên AI)
+                short_desc = (desc[:300] + '...') if len(desc) > 300 else desc
+                summary += f"Tiêu đề: {entry.title}\nTóm tắt: {short_desc}\nLink: {entry.link}\n\n"
         except:
             continue
     return summary
 
 def get_ai_report(news_data):
+    """Phân tích dữ liệu bằng AI với xử lý lỗi Quota"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -35,11 +40,10 @@ def get_ai_report(news_data):
     
     prompt = f"""
 Bạn là chuyên gia phân tích chiến lược và pháp lý phục vụ Vũ Quang Phát (10 năm kinh nghiệm, học ULAW).
-Dữ liệu: {news_data}
+Dữ liệu thô: {news_data}
 
 HÃY SOẠN: "BÁO CÁO PHÂN TÍCH TỔNG HỢP".
-Định dạng: Markdown, KHÔNG EMOJI.
-Ngôn ngữ chính: TIẾNG VIỆT.
+Yêu cầu: Markdown, KHÔNG EMOJI. Ngôn ngữ chính: TIẾNG VIỆT.
 
 CẤU TRÚC:
 ## 1. ĐỊA CHÍNH TRỊ & KINH TẾ THẾ GIỚI
@@ -47,29 +51,29 @@ CẤU TRÚC:
 ## 3. PHÂN TÍCH TÌNH HUỐNG (IRAC METHOD)
 ## 4. KỸ NĂNG LẬP LUẬN (LOGIC)
 ## 5. UK IDIOM OF THE DAY (LEVEL B2)
-- Trình bày song ngữ Anh-Việt.
 ## 6. TƯ DUY PHẢN BIỆN (RISK & OPPORTUNITY)
-## 7. TỪ VỰNG TIẾNG ANH CHUYÊN NGÀNH (UK B2)
-- Trình bày bảng: Từ vựng | /IPA/ | Nghĩa | Ví dụ (Song ngữ).
+## 7. TỪ VỰNG TIẾNG ANH CHUYÊN NGÀNH (UK B2) - Trình bày bảng (Từ vựng | IPA | Nghĩa | Ví dụ).
 ## 8. TRÍCH DẪN NGUỒN
 """
 
     try:
-        models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        target = next((m for m in models if 'flash' in m), models[0])
-        model = genai.GenerativeModel(target)
+        # Tối ưu việc chọn model để tránh gọi API list_models quá nhiều
+        model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
+        if "429" in str(e):
+            return "Hệ thống AI hiện đang bận (Hết hạn mức ngày). Vui lòng đợi đến chu kỳ reset tiếp theo hoặc nâng cấp gói API."
         return f"AI Error: {str(e)}"
 
 def send_email(markdown_content):
+    """Gửi email với định dạng CSS chuẩn pháp lý và canh lề đều"""
     sender = "phat.clover@gmail.com"
     pwd = os.environ.get('GMAIL_PASSWORD')
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[CHIẾN LƯỢC] BÁO CÁO TỔNG HỢP #{run_num}"
+    msg["Subject"] = f"[CHIẾN LƯỢC] BÁO CÁO TỔNG HỢP #{run_num}"
     msg["From"] = f"Strategic AI Assistant <{sender}>"
     msg["To"] = sender
     
@@ -79,12 +83,36 @@ def send_email(markdown_content):
     <html>
       <head>
         <style>
-            body {{ font-family: 'Times New Roman', serif; background-color: #f4f7f6; padding: 30px; line-height: 1.8; }}
-            .container {{ max-width: 850px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #002b5e; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }}
-            h1, h2 {{ color: #002b5e; }}
+            body {{ 
+                font-family: 'Times New Roman', serif; 
+                background-color: #f4f7f6; 
+                padding: 30px; 
+                line-height: 1.8; 
+                color: #1a1a1a;
+            }}
+            .container {{ 
+                max-width: 850px; 
+                margin: 0 auto; 
+                background: #fff; 
+                padding: 50px; 
+                border-top: 10px solid #002b5e; 
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            }}
+            h1 {{ color: #002b5e; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
+            h2 {{ color: #002b5e; border-bottom: 2px solid #002b5e; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
+            
+            /* Canh lề đều hai bên chuẩn văn bản pháp luật */
+            p, li {{ 
+                text-align: justify; 
+                text-justify: inter-word; 
+                margin-bottom: 15px; 
+                font-size: 16px; 
+            }}
+            
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-            table, th, td {{ border: 1px solid #ddd; padding: 10px; }}
+            table, th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
             th {{ background-color: #f8f9fa; }}
+            .footer {{ text-align: center; font-size: 11px; color: #888; margin-top: 50px; border-top: 1px solid #eee; padding-top: 15px; }}
         </style>
       </head>
       <body>
@@ -97,7 +125,6 @@ def send_email(markdown_content):
       </body>
     </html>
     """
-    # ĐỊNH DẠNG UTF-8 BẮT BUỘC ĐỂ KHÔNG LỖI TIẾNG VIỆT
     msg.attach(MIMEText(full_html, "html", "utf-8"))
     
     try:
@@ -106,7 +133,7 @@ def send_email(markdown_content):
             server.sendmail(sender, sender, msg.as_string())
         print("Gửi email thành công!")
     except Exception as e:
-        print(f"Lỗi: {e}")
+        print(f"Lỗi gửi mail: {e}")
 
 if __name__ == "__main__":
     news = get_comprehensive_news()
