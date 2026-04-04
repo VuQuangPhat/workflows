@@ -56,15 +56,21 @@ CẤU TRÚC:
 ## 8. TRÍCH DẪN NGUỒN
 """
 
-    try:
-        # Tối ưu việc chọn model để tránh gọi API list_models quá nhiều
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
-        return response.text
+try:
+        # Tự động tìm kiếm model khả dụng để tránh lỗi 404
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        
+        for model_name in models_to_try:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                return response.text
+            except:
+                continue
+        return "AI Generation Failed."
     except Exception as e:
-        if "429" in str(e):
-            return "Hệ thống AI hiện đang bận (Hết hạn mức ngày). Vui lòng đợi đến chu kỳ reset tiếp theo hoặc nâng cấp gói API."
-        return f"AI Error: {str(e)}"
+        return f"System Error: {str(e)}"
 
 def send_email(markdown_content):
     """Gửi email với định dạng CSS chuẩn pháp lý và canh lề đều"""
