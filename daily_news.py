@@ -7,7 +7,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def get_comprehensive_news():
-    """Thu thập tin tức từ các nguồn quốc tế và Việt Nam"""
     sources = {
         "World (BBC)": "https://feeds.bbci.co.uk/news/world/rss.xml",
         "World (NYT)": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
@@ -29,24 +28,18 @@ def get_comprehensive_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng Gemini AI với định hướng pháp lý và chiến lược"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
     genai.configure(api_key=api_key)
     
     prompt = f"""
-Bạn là chuyên gia phân tích chiến lược và pháp lý phục vụ Vũ Quang Phát (10 năm kinh nghiệm Pháp lý, ULAW).
+Bạn là chuyên gia phân tích chiến lược và pháp lý phục vụ Vũ Quang Phát (10 năm kinh nghiệm, học ULAW).
 Dữ liệu: {news_data}
 
 HÃY SOẠN: "BÁO CÁO PHÂN TÍCH TỔNG HỢP".
 Định dạng: Markdown, KHÔNG EMOJI.
-Ngôn ngữ chính: TIẾNG VIỆT chuyên nghiệp.
-
-YÊU CẦU:
-1. TRÌNH ĐỘ TIẾNG ANH: Mục 5 và 7 dùng thuật ngữ/thành ngữ UK trình độ B2.
-2. SONG NGỮ: Mục 5 và 7 BẮT BUỘC có tiếng Việt giải nghĩa và dịch ví dụ.
-3. PHÁP LÝ: Mục 3 phân tích theo phương pháp IRAC (Issue, Rule, Analysis, Conclusion).
+Ngôn ngữ chính: TIẾNG VIỆT.
 
 CẤU TRÚC:
 ## 1. ĐỊA CHÍNH TRỊ & KINH TẾ THẾ GIỚI
@@ -56,7 +49,7 @@ CẤU TRÚC:
 ## 5. UK IDIOM OF THE DAY (LEVEL B2)
 ## 6. TƯ DUY PHẢN BIỆN (RISK & OPPORTUNITY)
 ## 7. TỪ VỰNG TIẾNG ANH CHUYÊN NGÀNH (UK B2)
-- Trình bày bảng: Từ vựng | /IPA/ | Nghĩa (Anh-Việt) | Ví dụ (Anh-Việt).
+- Trình bày bảng: Từ vựng | /IPA/ | Nghĩa | Ví dụ (Song ngữ).
 ## 8. TRÍCH DẪN NGUỒN
 """
 
@@ -70,7 +63,6 @@ CẤU TRÚC:
         return f"AI Error: {str(e)}"
 
 def send_email(markdown_content):
-    """Gửi email HTML với định dạng canh lề đều hai bên (Justify)"""
     sender = "phat.clover@gmail.com"
     pwd = os.environ.get('GMAIL_PASSWORD')
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
@@ -104,7 +96,7 @@ def send_email(markdown_content):
             h1 {{ color: #002b5e; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
             h2 {{ color: #002b5e; border-bottom: 2px solid #002b5e; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
             
-            /* Tự động canh lề đều hai bên cho toàn bộ văn bản */
+            /* PHẦN QUAN TRỌNG: Canh lề đều hai bên cho đoạn văn và danh sách */
             p, li {{ 
                 text-align: justify; 
                 text-justify: inter-word; 
@@ -134,9 +126,9 @@ def send_email(markdown_content):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print("Success! Report sent with Justified alignment.")
+        print("Gửi email thành công!")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Lỗi: {e}")
 
 if __name__ == "__main__":
     news = get_comprehensive_news()
