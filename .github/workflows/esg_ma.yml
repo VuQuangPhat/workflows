@@ -2,8 +2,8 @@ name: ESG - M&A Report
 
 on:
   schedule:
-    # 04:30 UTC + 7 tiếng = 11:30 trưa giờ Việt Nam
-    - cron: '30 4 * * *'
+     # 00:50 UTC = 7:50 AM giờ Việt Nam
+    - cron: '50 0 * * *'
   workflow_dispatch:
 
 env:
