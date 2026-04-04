@@ -2,8 +2,8 @@ name: Daily News Report
 
 on:
   schedule:
-    # 04:20 UTC + 7 tiếng = 11:20 sáng giờ Việt Nam
-    - cron: '20 4 * * *'
+    # 01:00 UTC = 8:00 AM giờ Việt Nam
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 env:
