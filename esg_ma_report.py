@@ -20,7 +20,7 @@ def get_ma_esg_news():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- SOURCE: {cat.upper()} ---\n"
-            for entry in feed.entries[:6]: # Lấy 6 tin mỗi nguồn để tránh quá tải token
+            for entry in feed.entries[:6]: 
                 desc = entry.get('summary', entry.get('description', ''))
                 summary += f"Title: {entry.title}\nContent: {desc}\nLink: {entry.link}\n\n"
         except:
@@ -35,7 +35,6 @@ def get_ai_report(news_data):
     
     genai.configure(api_key=api_key)
     
-    # Prompt được thiết kế để khớp 100% với mẫu báo cáo bạn mong muốn
     prompt = f"""
 Bạn là chuyên gia phân tích chiến lược M&A và ESG phục vụ Vũ Quang Phát (10 năm kinh nghiệm Pháp lý, ULAW).
 Dữ liệu đầu vào: {news_data}
@@ -45,43 +44,43 @@ YÊU CẦU HÌNH THỨC:
 2. Ngôn ngữ: UK English cho toàn báo cáo.
 3. NGOẠI LỆ SONG NGỮ: Mục 5 và Mục 7 BẮT BUỘC phải có tiếng Việt (Giải nghĩa và Dịch ví dụ).
 
-CẤU TRÚC BÁO CÁO (TUÂN THỦ TUYỆT ĐỐI):
-
+CẤU TRÚC BÁO CÁO:
 ## 1. TỔNG QUAN M&A (DEAL FLOWS)
-(Phân tích các dòng vốn, thương vụ hoặc biến động kinh tế vĩ mô từ dữ liệu)
-
-## 2. ESG COMPLIANCE & GOVERNANCE
-(Trình bày dưới dạng BẢNG gồm các cột: Lĩnh vực | Tình trạng | Chi tiết chiến lược)
-
+## 2. ESG COMPLIANCE & GOVERNANCE (Dạng bảng: Lĩnh vực | Tình trạng | Chi tiết)
 ## 3. PHÂN TÍCH PHÁP LÝ (IRAC METHOD)
-(Chọn 1 tình huống pháp lý tiêu biểu từ dữ liệu để phân tích theo: Issue, Rule, Analysis, Conclusion)
-
 ## 4. KỸ NĂNG LẬP LUẬN (LOGIC)
-(Sử dụng một kỹ thuật logic như 'Refutation by Counter-example' hoặc 'Syllogism' để phản biện một vấn đề trong tin tức)
-
 ## 5. UK IDIOM OF THE DAY (LEVEL B2)
 - **Thành ngữ:** "[Idiom]"
 - **Nghĩa:** [English definition] - ([Nghĩa tiếng Việt])
 - **Ví dụ:** [English example] - ([Dịch ví dụ sang tiếng Việt])
-
 ## 6. TƯ DUY PHẢN BIỆN (RISK & OPPORTUNITY)
-(Đưa ra góc nhìn sâu về rủi ro tiềm ẩn hoặc cơ hội chiến lược, ví dụ về Greenwashing hoặc tâm lý đầu tư)
-
 ## 7. TỪ VỰNG CHUYÊN NGÀNH (UK B2)
-- Trình bày dạng BẢNG: **Từ vựng** | /IPA/ | Nghĩa (Anh-Việt) | Ví dụ (Anh-Việt)
-(Lưu ý: Cột Nghĩa và Ví dụ PHẢI có tiếng Việt)
-
+- Bảng: **Từ vựng** | /IPA/ | Nghĩa (Anh-Việt) | Ví dụ (Anh-Việt)
 ## 8. TRÍCH DẪN NGUỒN
-(Liệt kê các nguồn tin đã sử dụng)
 """
 
     try:
-        # Tự động chọn model Flash để có tốc độ nhanh nhất hoặc Pro nếu cần sâu hơn
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
-        return response.text
+        # GIẢI PHÁP SỬA LỖI 404: Tự động liệt kê và chọn model khả dụng
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        
+        # Ưu tiên Flash -> Pro -> các bản khác
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        
+        if not models_to_try:
+            return "Error: No supported AI models found in your account."
+
+        for model_name in models_to_try:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                if response and response.text:
+                    return response.text
+            except Exception:
+                continue
+        
+        return "AI Generation Failed after trying multiple models."
     except Exception as e:
-        return f"AI Generation Error: {str(e)}"
+        return f"System Error: {str(e)}"
 
 def send_email(markdown_content):
     """Gửi email định dạng HTML chuyên nghiệp"""
@@ -94,10 +93,8 @@ def send_email(markdown_content):
     msg["From"] = f"Strategic AI Assistant <{sender}>"
     msg["To"] = sender
     
-    # Chuyển đổi Markdown sang HTML (hỗ trợ bảng và xuống dòng)
     html_body = markdown.markdown(markdown_content, extensions=['extra', 'nl2br', 'tables'])
     
-    # Giao diện Email chuẩn CSS (Times New Roman, Blue Header)
     full_html = f"""
     <html>
       <head>
@@ -123,24 +120,17 @@ def send_email(markdown_content):
     </html>
     """
     
-    # QUAN TRỌNG: Thiết lập utf-8 để không lỗi font tiếng Việt
     msg.attach(MIMEText(full_html, "html", "utf-8"))
     
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print(f"Báo cáo #{run_num} đã được gửi thành công!")
+        print(f"Success! Report #{run_num} sent.")
     except Exception as e:
-        print(f"Lỗi gửi mail: {e}")
+        print(f"Email Error: {e}")
 
 if __name__ == "__main__":
-    # Quy trình thực thi
-    print("Đang lấy tin tức...")
     news = get_ma_esg_news()
-    
-    print("Đang phân tích dữ liệu bằng AI...")
     report = get_ai_report(news)
-    
-    print("Đang gửi email báo cáo...")
     send_email(report)
