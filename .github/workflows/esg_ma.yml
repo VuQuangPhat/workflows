@@ -1,0 +1,34 @@
+name: ESG - M&A Report
+
+on:
+  schedule:
+    # 01:15 UTC + 7 tiếng = 08:15 sáng giờ Việt Nam
+    - cron: '15 1 * * *'
+  workflow_dispatch:
+
+env:
+  # Xóa cảnh báo Node.js trên GitHub Actions
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -U google-generativeai feedparser markdown
+
+      - name: Run ESG Script
+        env:
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: python esg_ma_report.py
