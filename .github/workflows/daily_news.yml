@@ -31,4 +31,4 @@ jobs:
           GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
-        run: python news_bot.py
+        run: python daily_news.py
