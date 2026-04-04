@@ -2,12 +2,11 @@ name: ESG - M&A Report
 
 on:
   schedule:
-    # 01:15 UTC + 7 tiếng = 08:15 sáng giờ Việt Nam
-    - cron: '15 1 * * *'
+    # 04:30 UTC + 7 tiếng = 11:30 trưa giờ Việt Nam
+    - cron: '30 4 * * *'
   workflow_dispatch:
 
 env:
-  # Xóa cảnh báo Node.js trên GitHub Actions
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
