@@ -34,34 +34,39 @@ def get_ai_report(news_data):
     
     genai.configure(api_key=api_key)
     
-    # Prompt đã được tối ưu để đảm bảo nội dung song ngữ ở Mục 5 & 7
+    # Prompt đã được chuyển đổi ngôn ngữ chính sang Tiếng Việt
     prompt = f"""
 Bạn là chuyên gia phân tích chiến lược M&A và ESG phục vụ Vũ Quang Phát (10 năm kinh nghiệm Pháp lý, ULAW).
 Dữ liệu: {news_data}
 
 HÃY SOẠN BÁO CÁO: Markdown, NO EMOJI.
-NGÔN NGỮ CHÍNH: UK English. 
-RIÊNG MỤC 5 VÀ 7: Bắt buộc trình bày SONG NGỮ (Anh - Việt).
+NGÔN NGỮ CHÍNH: Tiếng Việt (Phong cách chuyên nghiệp, luật sư).
+
+YÊU CẦU CỤ THỂ:
+1. TRÌNH ĐỘ TIẾNG ANH: Các thuật ngữ tại mục 5 và 7 dùng trình độ B2.
+2. SONG NGỮ: Riêng mục 5 và 7 PHẢI trình bày song ngữ (Anh - Việt) để hỗ trợ học tập.
+3. PHƯƠNG PHÁP: Sử dụng IRAC cho mục 3 và tư duy logic phản biện cho mục 4 và 6.
 
 CẤU TRÚC BÁO CÁO:
-## 1. TỔNG QUAN M&A (DEAL FLOWS)
-## 2. ESG COMPLIANCE & GOVERNANCE (Kèm bảng tóm tắt)
-## 3. PHÂN TÍCH PHÁP LÝ (IRAC METHOD)
-## 4. KỸ NĂNG LẬP LUẬN (LOGIC)
-## 5. UK IDIOM OF THE DAY (LEVEL B2)
+## 1. TỔNG QUAN M&A (CÁC THƯƠNG VỤ TIÊU BIỂU)
+## 2. TUÂN THỦ ESG & QUẢN TRỊ (Kèm bảng tóm tắt)
+## 3. PHÂN TÍCH PHÁP LÝ (PHƯƠNG PHÁP IRAC)
+## 4. KỸ NĂNG LẬP LUẬN LOGIC
+## 5. THÀNH NGỮ UK MỖI NGÀY (LEVEL B2)
 - **Thành ngữ:** "[Idiom]"
-- **Nghĩa:** [English definition] - ([Nghĩa tiếng Việt])
-- **Ví dụ:** [English example] - ([Dịch ví dụ sang tiếng Việt])
-## 6. TƯ DUY PHẢN BIỆN (RISK & OPPORTUNITY)
+- **Nghĩa:** [English] - ([Tiếng Việt])
+- **Ví dụ:** [English] - ([Tiếng Việt])
+## 6. TƯ DUY PHẢN BIỆN (RỦI RO & CƠ HỘI)
 ## 7. TỪ VỰNG CHUYÊN NGÀNH (UK B2)
 - Trình bày bảng: **Từ vựng** | /IPA/ | Nghĩa (Anh-Việt) | Ví dụ (Anh-Việt). 
-(Lưu ý: Cột Nghĩa và Ví dụ PHẢI có tiếng Việt).
 ## 8. TRÍCH DẪN NGUỒN
 """
 
     try:
+        # Tự động tìm kiếm model khả dụng để tránh lỗi 404
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        
         for model_name in models_to_try:
             try:
                 model = genai.GenerativeModel(model_name)
@@ -79,11 +84,10 @@ def send_email(markdown_content):
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[STRATEGIC] M&A & ESG REPORT #{run_num}"
-    msg["From"] = sender
+    msg["Subject"] = f"[CHIẾN LƯỢC] BÁO CÁO M&A & ESG #{run_num}"
+    msg["From"] = f"Trợ lý Chuyên gia <{sender}>"
     msg["To"] = sender
     
-    # Render Markdown sang HTML
     html_body = markdown.markdown(markdown_content, extensions=['extra', 'nl2br', 'tables'])
     
     full_html = f"""
@@ -103,8 +107,8 @@ def send_email(markdown_content):
       </head>
       <body>
         <div class="container">
-            <h1>M&A & ESG STRATEGIC ANALYSIS</h1>
-            <p style="text-align: center;">Kính gửi chuyên gia: <b>Vũ Quang Phát</b></p>
+            <h1>PHÂN TÍCH CHIẾN LƯỢC M&A & ESG</h1>
+            <p style="text-align: center;">Kính gửi chuyên gia pháp lý: <b>Vũ Quang Phát</b></p>
             <div class="content">{html_body}</div>
             <div class="footer">Hệ thống phân tích tự động | Gemini AI & GitHub Actions</div>
         </div>
@@ -112,14 +116,13 @@ def send_email(markdown_content):
     </html>
     """
     
-    # QUAN TRỌNG: Thêm "utf-8" để hiển thị tiếng Việt chuẩn xác
     msg.attach(MIMEText(full_html, "html", "utf-8"))
     
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print("Success! Email sent with UTF-8 encoding.")
+        print("Success! Email sent in Vietnamese with UTF-8 encoding.")
     except Exception as e:
         print(f"Error: {e}")
 
