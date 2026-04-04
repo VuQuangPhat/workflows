@@ -1,4 +1,4 @@
-name: ESG - M&A Report
+name: Daily News Report
 
 on:
   schedule:
