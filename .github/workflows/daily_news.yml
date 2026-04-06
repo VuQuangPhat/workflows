@@ -2,10 +2,10 @@ name: Daily News Report
 
 on:
   schedule:
-    # 00:30 UTC = 07:30 ICT (Asia/Ho_Chi_Minh)
-    - cron: '30 0 * * *'
+    # 22:30 UTC = 05:40 ICT (Asia/Ho_Chi_Minh)
+    - cron: '30 22 * * *'
   workflow_dispatch:
-
+  
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   TZ: Asia/Ho_Chi_Minh
