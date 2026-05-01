@@ -2,8 +2,8 @@ name: PL DA BDS
 
 on:
   schedule:
-    # 22:30 UTC Thứ 2, Thứ 6 = 05:30 ICT Thứ 3, Thứ 7 (Asia/Ho_Chi_Minh)
-    - cron: '30 22 * * 1,5'
+    # 22:30 UTC (05:30 ICT) vào ngày 1 và ngày 15 hàng tháng
+    - cron: '30 22 1,15 * *'
   workflow_dispatch:
   
 env:
