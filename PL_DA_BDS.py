@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Tách biệt DA ĐT tổng quát và DA NQ 171"""
+    """Phân tích dữ liệu bằng AI: Mức độ chuyên sâu chiến lược, giải pháp thực chiến"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -47,49 +47,49 @@ def get_ai_report(news_data):
     
     prompt = f"""
 Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ của bạn là lập báo cáo phân tích chuyên sâu từ dữ liệu tin tức, tuân thủ nghiêm ngặt quy trình ISO (PDCA) và bám sát khung pháp lý hiện hành.
+Nhiệm vụ của bạn là lập báo cáo phân tích CHUYÊN SÂU CHIẾN LƯỢC từ dữ liệu tin tức, tuân thủ nghiêm ngặt quy trình ISO (PDCA) và bám sát khung pháp lý hiện hành.
 
 THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
 
 LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
 1. VỀ NGHỊ QUYẾT 171/2024/QH15: 
-   - TUYỆT ĐỐI KHÔNG tự bịa đặt hoặc mở rộng sai phạm vi của Nghị quyết. 
-   - Tên và phạm vi chính xác là: "Nghị quyết về thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất". (Tuyệt đối KHÔNG nhắc đến "dự án hỗn hợp", "công trình công cộng").
+   - Tên chính xác: "Nghị quyết về thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất".
+   - Phân tích chuyên sâu vào bài toán thực tiễn: Giải pháp khi đàm phán nhận QSDĐ bế tắc ("đất da báo"), rủi ro trượt giá đền bù, và vướng mắc khi xác định tiền sử dụng đất.
 2. VỀ LUẬT VÀ THUẬT NGỮ CHUYÊN MÔN: 
-   - CHỈ ĐƯỢC PHÉP dùng cấu trúc của Luật Đầu tư 143/2025/QH15 (Điều 24: Dự án thuộc diện CTCTĐT; Điều 25: Thẩm quyền CTCTĐT).
-   - Áp dụng chuẩn xác: Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
+   - Chỉ dùng: Luật Đầu tư 143/2025/QH15; Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
+   - Khi phân tích dự án tổng quát: Phải làm rõ các ngã rẽ lựa chọn nhà đầu tư (Điều 23 LĐT 143/2025) và các trường hợp áp dụng thủ tục đầu tư đặc biệt (Điều 28 LĐT 143/2025).
    - Thuật ngữ chuẩn: "Chấp thuận chủ trương đầu tư" (CTCTĐT), "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất". Nghiêm cấm dùng từ "chấp thuận nhu cầu sử dụng đất".
-3. VỀ TÊN GỌI SỞ BAN NGÀNH (ÁP DỤNG QUY ĐỊNH MỚI TỪ SAU 01/07/2025):
+3. VỀ TÊN GỌI SỞ BAN NGÀNH (SAU 01/07/2025):
    - KHÔNG dùng "Sở Tài nguyên và Môi trường" -> Bắt buộc dùng "Sở Nông nghiệp và Môi trường".
    - KHÔNG dùng "Sở Kế hoạch và Đầu tư" -> Bắt buộc dùng "Sở Tài chính".
    - KHÔNG dùng "Sở Quy hoạch - Kiến trúc" -> Bắt buộc dùng "Sở Xây dựng".
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
-YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong sắc bén, thực chiến. KHÔNG đánh số cứng (1, 2, 3...) cho tiêu đề chính. Tùy biến tiêu đề cho linh hoạt, nhưng phải tuân thủ luồng phân tích làm 2 mũi nhọn (Tổng quát và NQ 171) theo cấu trúc 5 bước sau:
+YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong tham mưu chiến lược, bóc tách rủi ro cực kỳ sắc bén. KHÔNG đánh số cứng (1, 2, 3...) cho tiêu đề chính. Tùy biến tiêu đề cho linh hoạt, tuân thủ luồng phân tích 5 bước sau:
 
 CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
 
-* TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): 
-  - Tổng hợp tin tức, cảnh báo hiệu lực văn bản. Nêu rõ thẩm quyền rà soát thuộc về ai.
+* TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Đánh giá Tác động chính sách 24h): 
+  - Tổng hợp tin tức, cảnh báo hiệu lực văn bản. ĐÁNH GIÁ SÂU: Tin tức này tác động thế nào đến rủi ro thời gian và chi phí của Chủ đầu tư? Nêu rõ thẩm quyền rà soát.
 
-* TIÊU ĐỀ BƯỚC PLAN (Phân tích pháp lý DA ĐT BĐS TỔNG QUÁT): 
-  - Phân tích cơ chế, thủ tục quy trình chung dự án ĐT BĐS theo Điều 24, Điều 25 Luật Đầu tư 143/2025/QH15.
-  - Thẩm quyền thực hiện: Nêu rõ Quốc hội, Thủ tướng, UBND cấp tỉnh, Sở Tài chính.
+* TIÊU ĐỀ BƯỚC PLAN (Chiến lược pháp lý DA ĐT BĐS TỔNG QUÁT): 
+  - Đánh giá chiến lược tiếp cận dự án theo Điều 23, 24, 25, 28 Luật Đầu tư 143/2025/QH15. Phân tích ưu/nhược điểm giữa việc tham gia đấu thầu/đấu giá so với xin chấp thuận nhà đầu tư.
+  - Thẩm quyền thực hiện: Quốc hội, Thủ tướng, UBND cấp tỉnh, Sở Tài chính.
 
 * TIÊU ĐỀ BƯỚC DO (Phân tích chuyên sâu DA ĐT THÍ ĐIỂM THEO NQ 171/2024/QH15): 
-  - Nhấn mạnh đúng đối tượng: Dự án nhà ở thương mại thông qua thỏa thuận nhận QSDĐ / đang có QSDĐ.
-  - BẮT BUỘC TRÌNH BÀY ĐỦ 3 TIỂU MỤC (dù có tin tức mới hay không):
-    + 1. Trình tự thực hiện & Cách tiếp cận: Lập sơ đồ các bước (HĐND cấp tỉnh duyệt danh mục -> UBND cấp tỉnh ra Thông báo -> Thỏa thuận nhận QSDĐ -> Chuyển mục đích sử dụng đất).
-    + 2. Thuận lợi & Cơ chế tháo gỡ: Đánh giá lợi thế cho CĐT khi tiếp cận quỹ đất không phải đất ở.
-    + 3. Vướng mắc & Rủi ro thực tiễn: Những khó khăn trong đàm phán đất đai, lúng túng trong chỉ đạo của địa phương.
-  - Thẩm quyền thực hiện: Nêu rõ vai trò của HĐND, UBND cấp tỉnh, và Sở Nông nghiệp và Môi trường.
+  - Trình bày thành 3 tiểu mục mang tính tham mưu cao:
+    + 1. Nút thắt Quy trình & Thẩm quyền: Phân tích khoảng hở thời gian từ lúc HĐND cấp tỉnh duyệt danh mục đến khi UBND cấp tỉnh ra Thông báo. Cơ quan nào (Sở NN&MT hay Sở Tài chính) sẽ nắm quyền chi phối tiến độ ở giai đoạn này?
+    + 2. Cơ hội tối ưu hóa chi phí: Việc được chủ động thỏa thuận QSDĐ giúp CĐT chủ động dòng tiền ra sao so với chờ Nhà nước thu hồi đất?
+    + 3. Quản trị rủi ro "Đất da báo": Đề xuất giải pháp dự phòng pháp lý cho CĐT nếu quá trình thỏa thuận với dân kéo dài, hoặc không đạt 100% diện tích (áp dụng luật dân sự kết hợp chính sách địa phương).
 
-* TIÊU ĐỀ BƯỚC ACT (Đánh giá tình huống - IRAC): 
-  - Xử lý 1 vướng mắc (Giao đất, chuyển mục đích...). Thẩm quyền thực hiện: Sử dụng đúng tên Sở ban ngành mới (Sở Nông nghiệp và Môi trường, Sở Xây dựng...).
+* TIÊU ĐỀ BƯỚC ACT (Giải pháp tình huống IRAC trình Ban Giám đốc): 
+  - Xử lý 1 vướng mắc từ tin tức. 
+  - Cấu trúc: Issue (Vấn đề) - Rule (Luật áp dụng) - Application (Phân tích áp dụng) - Conclusion (Phải là một ACTION PLAN/Giải pháp hành động cụ thể cho CĐT).
+  - Nêu rõ Thẩm quyền phê duyệt của cơ quan nhà nước (dùng đúng tên Sở mới).
 
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ & UK IDIOM: Bảng từ vựng và 1 câu thành ngữ.
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ BĐS & UK IDIOM: Bảng từ vựng cao cấp (C1/C2) và 1 thành ngữ đàm phán hợp đồng.
 """
 
     try:
