@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI xử lý dữ liệu: Áp dụng tư duy Cố vấn Chiến lược & Lọc từ khóa"""
+    """Trợ lý AI xử lý dữ liệu: Thẩm định nội dung chuyên môn & Quy trình NQ 171"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -45,32 +45,38 @@ def get_ai_report(news_data):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
-    # PROMPT ĐƯỢC NÂNG CẤP: LINH ĐỘNG CẤU TRÚC, ÉP ĐƯA BẢNG TIẾN ĐỘ & NÚT THẮT
     prompt = f"""
-Bạn là Trợ lý Cố vấn Pháp lý BĐS chuyên nghiệp, làm việc dưới sự chỉ đạo của Chuyên viên pháp lý dự án Vũ Quang Phát.
-Nhiệm vụ: Lập báo cáo TỔNG HỢP, CẬP NHẬT CHÍNH SÁCH & THAM MƯU CHIẾN LƯỢC định kỳ.
+Bạn là Trợ lý Cố vấn Pháp lý BĐS chuyên nghiệp. Nhiệm vụ của bạn là lập báo cáo chuyên sâu về QUY TRÌNH ĐẦU TƯ DỰ ÁN BẤT ĐỘNG SẢN.
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
-BỘ QUY TẮC CỐT LÕI (TUÂN THỦ TUYỆT ĐỐI 100%):
-1. ĐỊA GIỚI & BỘ MÁY (SAU 01/07/2025): NQ 202/2025 sáp nhập Bình Dương, BR-VT vào TP.HCM. Cấm dùng "UBND Quận". Bắt buộc dùng: "Sở Nông nghiệp và Môi trường" (Đất đai), "Sở Tài chính" (Giá đất), "Sở Xây dựng".
-2. BẢN CHẤT NQ 171: Chỉ dùng để chuyển mục đích từ ĐẤT KHÁC sang ĐẤT Ở. Tuyệt đối không phân tích chung cư cũ.
-3. LUẬT MỚI LIÊN THÔNG: Phân tích dựa trên sự đồng bộ của Luật Đầu tư 143, Luật Đất đai 31, Luật Xây dựng 135, Luật KDBĐS 29.
-4. NGOẠI NGỮ B1: Chỉ sử dụng các từ vựng tiếng Anh chuyên ngành ở mức độ B1 (Ví dụ: Deposit, Lease, Permit...) và 1 UK Idiom. KHÔNG dùng từ C1/C2 phức tạp.
+BỘ QUY TẮC THẨM ĐỊNH NỘI DUNG (TUÂN THỦ TUYỆT ĐỐI):
 
-Dữ liệu thô từ báo chí hôm nay: {news_data}
+1. BỘ LỌC CHUYÊN MÔN (HÀNG RÀO NỘI DUNG):
+   - CHỈ TRÍCH XUẤT tin tức có tác động trực tiếp đến: Pháp lý dự án, giá đất, quy hoạch xây dựng, hạ tầng kỹ thuật, bồi thường giải phóng mặt bằng.
+   - LOẠI BỎ hoàn toàn các tin tức kinh tế vĩ mô chung chung không liên quan đến BĐS (Ví dụ: chính trị quốc tế, vận tải hàng không, du lịch, kinh doanh hàng tiêu dùng...) ngay cả khi chúng xuất hiện trong dữ liệu thô.
+   - Tuyệt đối không đưa các tin về eo biển Hormuz, Vietjet hay du lịch Cô Tô vào báo cáo nếu nó không ảnh hưởng đến chi phí/pháp lý dự án cụ thể.
 
-YÊU CẦU CẤU TRÚC (LINH ĐỘNG VÀ THỰC CHIẾN):
-Bạn được TOÀN QUYỀN TỰ QUYẾT ĐỊNH việc chia các tiêu đề (Heading) sao cho logic, mạch lạc và phù hợp nhất với luồng thông tin nhận được. KHÔNG CẦN phải chia theo kiểu "Bước 1, Bước 2". 
-Tạo ra một báo cáo đọc tự nhiên như một chuyên gia đang trình bày. Tuy nhiên, TRONG BÁO CÁO BẮT BUỘC PHẢI CHỨA CÁC KHỐI NỘI DUNG SAU:
+2. QUY TRÌNH NQ 171 & LỘ TRÌNH VỀ ĐÍCH MỞ BÁN:
+   - Phải làm rõ lộ trình 11 bước từ: Thỏa thuận gom đất (Đất khác) -> Chấp thuận chủ trương (CTCTĐT) -> Quy hoạch 1/500 -> Quyết định CMDSDĐ (NQ 171) -> Định giá đất -> Sổ hồng tổng -> GPXD -> Thông báo đủ điều kiện mở bán.
+   - CHỈ ĐÍCH DANH NÚT THẮT: Điểm nghẽn thường kẹt tại Sở Nông nghiệp và Môi trường (rà soát nguồn gốc đất phức tạp) và Sở Tài chính (định giá đất chậm trễ hậu sáp nhập NQ 202/2025).
 
-- Khối 1: Đánh giá Tác động Chính sách & Vĩ mô từ tin tức (Giá vốn, chi phí đền bù, sức mua).
-- Khối 2 [QUAN TRỌNG NHẤT]: Bảng hoặc Sơ đồ phân tích LỘ TRÌNH, THẨM QUYỀN VÀ NÚT THẮT THỰC TẾ. Phân tích rõ các bước từ lúc gom đất, CTCTĐT đến khi Mở bán theo NQ 171. Chỉ đích danh quy trình đang hoặc sẽ bị kẹt ở khâu nào tại Sở Nông nghiệp và Môi trường (rà soát nguồn gốc) hay Sở Tài chính (định giá đất). Đề xuất ngay GIẢI PHÁP THỰC CHIẾN để gỡ nút thắt đó.
-- Khối 3: Quản trị rủi ro "Đất da báo" (nếu có thông tin liên quan đến gom đất).
-- Khối 4: Giải pháp tình huống IRAC cho một rủi ro cốt lõi nhất từ tin tức trong ngày.
-- Khối 5: 5 từ vựng B1 & 1 UK Idiom.
+3. ĐỊA GIỚI & BỘ MÁY (SAU 01/07/2025):
+   - Bình Dương, BR-VT đã sáp nhập vào TP.HCM. Cấm dùng "UBND Quận". 
+   - Bắt buộc dùng tên cơ quan mới: Sở Nông nghiệp và Môi trường, Sở Tài chính, Sở Xây dựng.
 
-Đầu báo cáo luôn bắt đầu bằng dòng: "Thời gian lập báo cáo: {current_time}"
+4. NGOẠI NGỮ B1: 
+   - Sử dụng từ vựng tiếng Anh pháp lý cơ bản (B1): Deposit, Lease, Permit, Ownership, Project. KHÔNG dùng từ C1/C2 phức tạp.
+   - 1 UK Idiom thương mại.
+
+Dữ liệu thô từ báo chí: {news_data}
+
+YÊU CẦU CẤU TRÚC:
+Tự do chia tiêu đề nhưng phải đảm bảo:
+- Khối 1: Phân tích tin tức chuyên môn (tác động đến giá vốn, đền bù).
+- Khối 2: Bảng chi tiết Lộ trình NQ 171, điểm nghẽn tại các Sở và giải pháp gỡ vướng thực chiến.
+- Khối 3: Phân tích IRAC cho rủi ro pháp lý/tài chính trọng tâm nhất.
+- Khối 4: 5 Từ vựng B1 & 1 UK Idiom.
 """
 
     try:
@@ -89,16 +95,14 @@ Tạo ra một báo cáo đọc tự nhiên như một chuyên gia đang trình 
                 print(f"Lỗi khi thử model {model_name}: {e}")
                 continue
                 
-        # --- BỘ LỌC CƯỠNG CHẾ PYTHON (BẢO VỆ TUYỆT ĐỐI) ---
+        # --- BỘ LỌC CƯỠNG CHẾ PYTHON ---
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
-            "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
+            "Sở TN&MT": "Sold Nông nghiệp và Môi trường",
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
             "Sở KH&ĐT": "Sở Tài chính",
-            "Sở Kế hoạch Đầu tư": "Sở Tài chính",
             "UBND quận": "UBND TP.HCM/Thành phố trực thuộc",
             "Ủy ban nhân dân quận": "UBND TP.HCM/Thành phố trực thuộc",
-            "UBND Quận": "UBND TP.HCM/Thành phố trực thuộc",
             "tỉnh Bình Dương": "TP.HCM",
             "tỉnh Bà Rịa": "TP.HCM"
         }
@@ -120,7 +124,7 @@ def send_email(markdown_content):
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CẬP NHẬT CHÍNH SÁCH & CHIẾN LƯỢC MỞ BÁN #{run_num}"
+    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CHIẾN LƯỢC DỰ ÁN & MỞ BÁN #{run_num}"
     msg["From"] = f"Real Estate Legal Assistant <{sender}>"
     msg["To"] = sender
     
@@ -145,7 +149,7 @@ def send_email(markdown_content):
       </head>
       <body>
         <div class="container">
-            <h1>BÁO CÁO TỔNG HỢP & THAM MƯU CHIẾN LƯỢC</h1>
+            <h1>BÁO CÁO CHIẾN LƯỢC DỰ ÁN ĐẦU TƯ BĐS</h1>
             <p style="text-align: center;">Thực hiện bởi: <strong>Trợ lý AI</strong> | Phê duyệt chuyên môn: <strong>Vũ Quang Phát</strong></p>
             <div class="content">{html_body}</div>
             <div class="footer">Hệ thống Trợ lý Báo cáo Tự động | Vận hành bởi Gemini AI & GitHub Actions</div>
