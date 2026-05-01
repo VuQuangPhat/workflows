@@ -10,15 +10,10 @@ from email.mime.multipart import MIMEMultipart
 def get_real_estate_news():
     """Thu thập tin tức chuyên sâu về Pháp lý, Chính sách và Bất động sản"""
     sources = {
-        # Nguồn tin chính thống & Văn bản pháp luật
         "Chính sách (Báo Chính phủ)": "https://baochinhphu.vn/rss/phap-luat.rss",
         "Tin tức (Thư viện Pháp luật)": "https://thuvienphapluat.vn/rss/tin-tuc.rss",
-        
-        # Nguồn chuyên ngành Pháp luật
         "Pháp luật (PLO)": "https://plo.vn/rss/phap-luat.rss",
         "Bất động sản (PLO)": "https://plo.vn/rss/bat-dong-san.rss",
-        
-        # Nguồn tin thị trường BĐS truyền thống
         "BĐS (VnExpress)": "https://vnexpress.net/rss/bat-dong-san.rss",
         "Pháp luật (VnExpress)": "https://vnexpress.net/rss/phap-luat.rss",
         "BĐS (CafeF)": "https://cafef.vn/bat-dong-san.rss"
@@ -30,10 +25,8 @@ def get_real_estate_news():
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
             
-            # Lấy 4 tin mỗi nguồn để đảm bảo không vượt quá giới hạn Context Window của AI
             for entry in feed.entries[:4]:
                 desc = entry.get('summary', entry.get('description', ''))
-                # Lọc bỏ các thẻ HTML rác để tiết kiệm token
                 clean_desc = re.sub('<[^<]+>', '', desc) 
                 
                 short_desc = (clean_desc[:350] + '...') if len(clean_desc) > 350 else clean_desc
@@ -45,18 +38,19 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI tập trung vào NQ 171 và pháp lý BĐS hiện hành"""
+    """Phân tích dữ liệu bằng AI bám sát quy trình chuẩn và NQ 171/2024/QH15"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
     genai.configure(api_key=api_key)
     
     prompt = f"""
-Bạn là Luật sư cấp cao chuyên ngành Bất động sản phục vụ Vũ Quang Phát (10 năm kinh nghiệm, học ULAW).
-Nhiệm vụ của bạn là đọc tin tức hôm nay và soạn thảo báo cáo cập nhật chuyên sâu.
+Bạn là Trợ lý AI chuyên môn cao hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
+Nhiệm vụ của bạn là đọc tin tức hôm nay và soạn thảo báo cáo cập nhật chuyên sâu, tuân thủ tư duy kiểm soát rủi ro pháp lý chuẩn.
 
-LƯU Ý CỐT LÕI VỀ HIỆU LỰC PHÁP LUẬT: Tuyệt đối không viện dẫn các Luật, Nghị quyết, Nghị định đã hết hiệu lực. 
-Phải tự động cập nhật khung pháp lý mới nhất đang có hiệu lực thi hành tại thời điểm hiện tại (ví dụ: Luật Đất đai 2024, Luật Đầu tư hiện hành, các văn bản kế thừa/thay thế Nghị quyết 171) hoặc các quy định thuộc phần "Điều khoản chuyển tiếp".
+LƯU Ý CỐT LÕI VỀ VĂN BẢN PHÁP LUẬT: 
+- Tuyệt đối không viện dẫn các văn bản đã hết hiệu lực hoặc bị nhầm lẫn ký hiệu cơ quan ban hành.
+- ĐẶC BIỆT CHÚ Ý: Chuyên đề cốt lõi hiện tại là "Nghị quyết số 171/2024/QH15 của Quốc hội về thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất". Tuyệt đối KHÔNG nhầm lẫn thành NQ 171/NQ-CP của Chính phủ.
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
@@ -64,27 +58,26 @@ HÃY SOẠN: "BÁO CÁO PHÁP LÝ BẤT ĐỘNG SẢN & DỰ ÁN".
 Yêu cầu: Markdown, KHÔNG EMOJI. Ngôn ngữ chính: TIẾNG VIỆT. Văn phong chuẩn mực, logic pháp lý chặt chẽ.
 
 CẤU TRÚC BẮT BUỘC:
-## 1. NHẬN ĐỊNH THỊ TRƯỜNG & HIỆU LỰC CHÍNH SÁCH TRONG 24H QUA
+## 1. TỔNG HỢP & CẢNH BÁO HIỆU LỰC CHÍNH SÁCH 24H QUA (CHECK)
 - Tóm tắt các sự kiện, chính sách BĐS đáng chú ý. 
-- Cảnh báo hiệu lực: Chỉ rõ văn bản pháp luật nào sắp ban hành, vừa có hiệu lực, hoặc vừa hết hiệu lực/bị bãi bỏ dựa trên tin tức (nếu có).
+- Cảnh báo hiệu lực: Chỉ rõ văn bản pháp luật nào sắp ban hành, vừa có hiệu lực (ví dụ Luật Đầu tư 143/2025/QH15), hoặc vừa hết hiệu lực.
 
-## 2. CHUYÊN ĐỀ ĐẶC BIỆT: NGHỊ QUYẾT 171 & NĐ 75/2025 (MỤC TIÊU CÔNG VIỆC)
-- Lọc mọi tin tức liên quan đến việc triển khai Nghị quyết 171 (Thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất).
-- Đánh giá tiến độ tháo gỡ điểm nghẽn thủ tục tại các địa phương (ví dụ: vướng mắc thủ tục xin văn bản chấp thuận của UBND cấp tỉnh trước hay sau khi HĐND thông qua danh mục).
-- LƯU Ý: Nếu hôm nay không có tin tức mới về NQ 171, hãy tự động phân tích một rủi ro pháp lý hoặc đưa ra một lời khuyên thực chiến cho CĐT khi thực hiện thỏa thuận nhận quyền sử dụng đất theo cơ chế thí điểm này.
+## 2. CHUYÊN ĐỀ MỤC TIÊU: NGHỊ QUYẾT 171/2024/QH15 & NGHỊ ĐỊNH HƯỚNG DẪN (PLAN)
+- Lọc mọi tin tức liên quan đến việc triển khai Nghị quyết 171/2024/QH15 và các thủ tục đi kèm.
+- Đánh giá tiến độ tháo gỡ điểm nghẽn thủ tục tại các địa phương (ví dụ: các Thông báo chấp thuận cho tổ chức thực hiện dự án thí điểm của UBND cấp tỉnh).
+- LƯU Ý: Nếu hôm nay không có tin tức mới, hãy tự động thiết lập một Check-list quy trình rủi ro thực chiến hoặc lời khuyên pháp lý cho Chủ đầu tư khi thực hiện thỏa thuận nhận quyền sử dụng đất theo cơ chế thí điểm của Nghị quyết 171/2024/QH15.
 
-## 3. CƠ CHẾ PHÁP LÝ CHUNG VỀ CHẤP THUẬN CHỦ TRƯƠNG ĐẦU TƯ
-- Phân tích bình luận chuyên sâu về quy trình, thủ tục dự án dựa trên khung pháp luật hiện hành mới nhất (Luật Đất đai 2024, Luật Đầu tư 2025...).
+## 3. CƠ CHẾ PHÁP LÝ CHUNG VỀ CHẤP THUẬN CHỦ TRƯƠNG ĐẦU TƯ (DO)
+- Phân tích bình luận chuyên sâu về quy trình, thủ tục dự án dựa trên khung pháp luật hiện hành (Luật Đất đai 2024, Luật Đầu tư 2025).
 
-## 4. PHÂN TÍCH TÌNH HUỐNG BĐS (IRAC METHOD)
-- Trích xuất một tình huống thực tiễn từ tin tức (ưu tiên vướng mắc bồi thường, giao đất, chuyển mục đích sử dụng đất).
-- Giải quyết theo cấu trúc IRAC (Issue - Rule - Application - Conclusion). Áp dụng luật hiện hành.
+## 4. PHÂN TÍCH TÌNH HUỐNG THỰC TIỄN (IRAC METHOD - ACT)
+- Trích xuất một tình huống thực tiễn từ tin tức (ưu tiên vướng mắc bồi thường, giao đất, chuyển mục đích sử dụng đất) và giải quyết theo cấu trúc IRAC (Issue - Rule - Application - Conclusion).
 
 ## 5. TỪ VỰNG TIẾNG ANH PHÁP LÝ BĐS (UK B2)
-- Trình bày bảng (Từ vựng | IPA | Nghĩa tiếng Việt | Ví dụ áp dụng trong Hợp đồng/Dự án).
+- Trình bày bảng (Từ vựng | IPA | Nghĩa tiếng Việt | Ví dụ áp dụng).
 
 ## 6. UK IDIOM OF THE DAY (LEVEL B2)
-- Một thành ngữ Anh (UK) kèm ngữ cảnh sử dụng trong đàm phán thương mại.
+- Một thành ngữ Anh (UK) dùng trong đàm phán thương mại.
 """
 
     try:
@@ -153,7 +146,7 @@ def send_email(markdown_content):
       <body>
         <div class="container">
             <h1>BÁO CÁO PHÁP LÝ BẤT ĐỘNG SẢN & DỰ ÁN</h1>
-            <p style="text-align: center;">Kính gửi Luật sư: <b>Vũ Quang Phát</b></p>
+            <p style="text-align: center;">Kính gửi Chuyên viên pháp lý: <b>Vũ Quang Phát</b></p>
             <div class="content">{html_body}</div>
             <div class="footer">Hệ thống phân tích tự động | Gemini AI & GitHub Actions</div>
         </div>
