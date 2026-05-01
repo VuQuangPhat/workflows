@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Chuẩn hóa bộ máy, pháp luật và địa giới hành chính mới nhất"""
+    """Phân tích dữ liệu bằng AI: Tích hợp Bộ lọc Cưỡng chế Tên Cơ quan"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -47,63 +47,72 @@ def get_ai_report(news_data):
     
     prompt = f"""
 Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ của bạn là lập báo cáo THỰC CHIẾN, TUYỆT ĐỐI KHÔNG LÝ THUYẾT SUÔNG, tuân thủ nghiêm ngặt quy trình ISO (PDCA) và bám sát khung pháp lý, địa lý MỚI NHẤT.
+Nhiệm vụ: Lập báo cáo THỰC CHIẾN, KHÔNG LÝ THUYẾT, tuân thủ ISO (PDCA), bám sát pháp lý và địa lý mới nhất.
 
-THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
+THỜI GIAN LẬP BÁO CÁO: {current_time}
 
 LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
-1. ĐỊA GIỚI HÀNH CHÍNH MỚI NHẤT (BẮT BUỘC THEO NGHỊ QUYẾT 202/2025/QH15):
-   - TỪ NGÀY 01/07/2025, TOÀN BỘ TỈNH BÌNH DƯƠNG VÀ TỈNH BÀ RỊA - VŨNG TÀU ĐÃ SÁP NHẬP VÀO THÀNH PHỐ HỒ CHÍ MINH.
-   - TUYỆT ĐỐI CẤM SỬ DỤNG cụm từ "tỉnh Bình Dương", "UBND tỉnh Bình Dương", "tỉnh Bà Rịa - Vũng Tàu". Phải gọi chuẩn xác là các đơn vị trực thuộc siêu đô thị TP.HCM (Ví dụ: "Thành phố Thủ Dầu Một, TP.HCM", "Thành phố Vũng Tàu, TP.HCM"). Thẩm quyền cấp tỉnh cao nhất ở các khu vực này nay thuộc về UBND TP.HCM.
-   - Tỉnh Đồng Nai và Tỉnh Long An vẫn là các tỉnh độc lập.
+1. CƠ CẤU TỔ CHỨC MỚI (BẮT BUỘC DÙNG CÁC TÊN NÀY CHO THẨM QUYỀN):
+   - Phụ trách Đất đai, Bồi thường, Giao đất, Môi trường: Gọi là "Sở Nông nghiệp và Môi trường".
+   - Phụ trách Đầu tư, Thẩm định CTCTĐT, Đấu thầu: Gọi là "Sở Tài chính".
+   - Phụ trách Quy hoạch, Kiến trúc, Cấp phép: Gọi là "Sở Xây dựng".
+   - (Tuyệt đối chỉ dùng 3 tên Sở trên khi nhắc đến cơ quan chuyên môn cấp tỉnh).
 
-2. CẤM VĂN MẪU LÝ THUYẾT: Nghiêm cấm giải thích luật chung chung. Mọi phân tích phải đi thẳng vào VẤN ĐỀ THỰC TẾ của Chủ đầu tư (CĐT) và HƯỚNG GIẢI QUYẾT.
+2. ĐỊA GIỚI HÀNH CHÍNH (NGHỊ QUYẾT 202/2025/QH15):
+   - Toàn bộ Bình Dương và Bà Rịa - Vũng Tàu đã thuộc TP.HCM. Thẩm quyền cấp tỉnh cao nhất nay là UBND TP.HCM. Không gọi là tỉnh Bình Dương. (Ví dụ: TP. Thủ Dầu Một trực thuộc TP.HCM). Đồng Nai và Long An vẫn là tỉnh độc lập.
 
-3. ĐIỂM NÓNG MIỀN NAM & ĐẦU TƯ CÔNG: Phân tích sự cộng hưởng của hạ tầng (Sân bay Long Thành, Vành đai 3, 4...) đến các dự án BĐS tại TP.HCM (đã bao gồm Bình Dương, BR-VT cũ), Đồng Nai, Long An. 
+3. KHÔNG VĂN MẪU LÝ THUYẾT: Đi thẳng vào VẤN ĐỀ THỰC TẾ của CĐT và HƯỚNG GIẢI QUYẾT.
 
-4. VỀ NGHỊ QUYẾT 171/2024/QH15: Phân tích tình huống thực tiễn khi đi gom đất thỏa thuận làm Nhà ở thương mại (dân ép giá, chậm ra thông báo chấp thuận...) và cách gỡ rối tại địa phương.
+4. ĐIỂM NÓNG HẠ TẦNG & LUẬT MỚI: 
+   - Phân tích ảnh hưởng của Sân bay Long Thành, Vành đai 3, 4 đến các dự án đang xin CTCTĐT theo Luật Đầu tư 143/2025/QH15.
+   - NQ 171/2024/QH15: Phân tích thực tế gom đất thỏa thuận làm Nhà ở thương mại.
+   - Các luật: Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
 
-5. LUẬT & TÊN CƠ QUAN MỚI NHẤT (SAU 01/07/2025): 
-   - Luật Đầu tư 143/2025/QH15; Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15. 
-   - Tên Sở mới: "Sở Nông nghiệp và Môi trường", "Sở Tài chính", "Sở Xây dựng" thuộc UBND TP.HCM (và các tỉnh khác).
+5. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng B1 - B2, thông dụng (Tenant, Landlord, Deposit, Contract, Permit...).
 
-6. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng mức độ B1 - B2, thông dụng (VD: Tenant, Landlord, Deposit, Contract, Permit...).
+Dữ liệu thô từ báo chí: {news_data}
 
-Dữ liệu thô từ báo chí hôm nay: {news_data}
-
-YÊU CẦU TRÌNH BÀY: Markdown. Tùy biến tiêu đề cho linh hoạt, tuân thủ 5 bước sau:
-
-CẤU TRÚC BÁO CÁO DỰ KIẾN:
-* [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
-
-* TIÊU ĐỀ BƯỚC CHECK (Nhận diện Cảnh báo Pháp lý 24h): 
-  - Điểm mặt tin tức trọng tâm trong ngày. Tác động tài chính/tiến độ đến dự án. Thẩm quyền rà soát.
-
-* TIÊU ĐỀ BƯỚC PLAN (Điểm nóng Hạ tầng Miền Nam & Tiến độ CTCTĐT): 
-  - Trình bày 1-2 Case Study tại TP.HCM (lưu ý địa giới mới), Đồng Nai hoặc Long An. Đánh giá thực tế xin CTCTĐT theo Luật Đầu tư 143/2025/QH15. Nêu rõ thẩm quyền của UBND TP.HCM, Sở Tài chính...
-
-* TIÊU ĐỀ BƯỚC DO (Thực chiến DA ĐT thí điểm theo NQ 171/2024/QH15): 
-  - Phân tích 1 bài toán thực tế thỏa thuận đền bù quỹ đất. Điểm thuận lợi vs Vướng mắc. Quy trình xử lý cụ thể của các cơ quan (Sở Nông nghiệp và Môi trường, UBND...).
-
-* TIÊU ĐỀ BƯỚC ACT (Xử lý Vướng mắc - IRAC Plan trình Ban Giám đốc): 
-  - Chọn 1 vướng mắc (Giao đất, chuyển mục đích...). Viết theo cấu trúc IRAC. Conclusion phải là Action Plan 3-4 gạch đầu dòng rõ ràng.
-
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (LEVEL B1-B2) & UK IDIOM:
-  - 5 từ vựng B1/B2 thông dụng (Bảng: Từ vựng | IPA | Nghĩa | Ví dụ). 1 thành ngữ UK đàm phán hợp đồng.
+CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt):
+* [Dòng 1] "Thời gian lập báo cáo: {current_time}"
+* TIÊU ĐỀ BƯỚC CHECK (Cảnh báo Pháp lý 24h): Tin tức trọng tâm. Thẩm quyền rà soát thuộc về ai.
+* TIÊU ĐỀ BƯỚC PLAN (Tiến độ CTCTĐT & Hạ tầng): Case Study thực tế tại TP.HCM (vùng Bình Dương/BR-VT cũ), Đồng Nai hoặc Long An xin CTCTĐT theo Luật Đầu tư 143/2025. Thẩm quyền giải quyết của Sở Tài chính và UBND.
+* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171/2024/QH15): Bài toán thỏa thuận đền bù quỹ đất. Vướng mắc & Quy trình gỡ rối của Sở Nông nghiệp và Môi trường.
+* TIÊU ĐỀ BƯỚC ACT (IRAC Plan trình Ban Giám đốc): Xử lý 1 vướng mắc. Cấu trúc IRAC. Conclusion là Action Plan cụ thể.
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng (Bảng) & 1 thành ngữ.
 """
 
     try:
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
         
+        raw_report = "AI Generation Failed."
         for model_name in models_to_try:
             try:
                 model = genai.GenerativeModel(model_name)
                 response = model.generate_content(prompt)
-                return response.text
+                raw_report = response.text
+                break
             except:
                 continue
-        return "AI Generation Failed."
+                
+        # --- BỘ LỌC CƯỠNG CHẾ BẰNG PYTHON (Đảm bảo 100% không sót tên Sở cũ) ---
+        replacements = {
+            "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
+            "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
+            "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
+            "Sở KH&ĐT": "Sở Tài chính",
+            "Sở Kế hoạch Đầu tư": "Sở Tài chính",
+            "Sở Quy hoạch - Kiến trúc": "Sở Xây dựng",
+            "Sở Quy hoạch và Kiến trúc": "Sở Xây dựng",
+            "Sở QH-KT": "Sở Xây dựng"
+        }
+        
+        cleaned_report = raw_report
+        for old_term, new_term in replacements.items():
+            cleaned_report = cleaned_report.replace(old_term, new_term)
+            
+        return cleaned_report
+        
     except Exception as e:
         return f"System Error: {str(e)}"
 
