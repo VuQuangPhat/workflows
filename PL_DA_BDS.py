@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Ép khung tổ chức bộ máy mới & Thẩm quyền ISO"""
+    """Phân tích dữ liệu bằng AI: Tích hợp chuyên đề sâu NQ 171/2024/QH15"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -58,14 +58,10 @@ LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
    - Thuật ngữ chuẩn: "Chấp thuận chủ trương đầu tư" (CTCTĐT), "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất". Nghiêm cấm dùng từ "chấp thuận nhu cầu sử dụng đất".
 
 2. VỀ TÊN GỌI SỞ BAN NGÀNH (ÁP DỤNG QUY ĐỊNH MỚI TỪ SAU 01/07/2025):
-   - Hệ thống tổ chức cơ quan hành chính đã sáp nhập. BẮT BUỘC SỬ DỤNG BẢNG QUY ĐỔI SAU, tuyệt đối KHÔNG viết tên cũ:
-     + KHÔNG dùng "Sở Tài nguyên và Môi trường" -> Bắt buộc dùng "Sở Nông nghiệp và Môi trường" (cơ quan hiện phụ trách đất đai, bồi thường, môi trường).
-     + KHÔNG dùng "Sở Kế hoạch và Đầu tư" -> Bắt buộc dùng "Sở Tài chính" (đã hợp nhất, hiện phụ trách thẩm định CTCTĐT, đấu thầu, tài chính).
-     + KHÔNG dùng "Sở Quy hoạch - Kiến trúc" -> Bắt buộc dùng "Sở Xây dựng" (đã hợp nhất, phụ trách quy hoạch, xây dựng, kiến trúc).
-
-3. VỀ NGHỊ QUYẾT 171/2024/QH15 & THẨM QUYỀN TỪNG BƯỚC ISO:
-   - Ở mỗi bước phân tích (Plan - Do - Check - Act), BẮT BUỘC phải trình bày 1 mục nhỏ có tên "Thẩm quyền thực hiện:" (Chỉ đích danh HĐND cấp tỉnh, UBND cấp tỉnh, hay Sở Nông nghiệp và Môi trường, Sở Tài chính, Sở Xây dựng).
-   - Chuyên đề NQ 171/2024/QH15: Phải phân tích rõ, thẩm định danh mục dự án thí điểm thuộc thẩm quyền HĐND, ban hành Thông báo chấp thuận thuộc UBND, và cơ quan tham mưu quỹ đất là Sở Nông nghiệp và Môi trường.
+   - Hệ thống tổ chức cơ quan hành chính đã sáp nhập. BẮT BUỘC SỬ DỤNG BẢNG QUY ĐỔI SAU:
+     + KHÔNG dùng "Sở Tài nguyên và Môi trường" -> Bắt buộc dùng "Sở Nông nghiệp và Môi trường".
+     + KHÔNG dùng "Sở Kế hoạch và Đầu tư" -> Bắt buộc dùng "Sở Tài chính".
+     + KHÔNG dùng "Sở Quy hoạch - Kiến trúc" -> Bắt buộc dùng "Sở Xây dựng".
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
@@ -75,20 +71,20 @@ CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
 
 * TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): 
-  - Tổng hợp tin tức, cảnh báo hiệu lực văn bản.
-  - Thẩm quyền thực hiện: Nêu rõ ai/cơ quan nào chịu trách nhiệm rà soát (Ví dụ: Chuyên viên pháp lý tổng hợp trình Ban Giám đốc).
+  - Tổng hợp tin tức, cảnh báo hiệu lực văn bản. Nêu rõ thẩm quyền rà soát thuộc về ai.
 
-* TIÊU ĐỀ BƯỚC PLAN (Hoạch định - Chuyên đề NQ 171/2024/QH15): 
-  - Phân tích sâu thủ tục thỏa thuận nhận QSDĐ. Nếu không có tin mới, lập Checklist phòng rủi ro cho CĐT.
+* TIÊU ĐỀ BƯỚC PLAN (Phân tích chuyên sâu DA ĐT theo Nghị quyết 171/2024/QH15): 
+  - BẮT BUỘC TRÌNH BÀY ĐỦ 3 TIỂU MỤC SAU (dù có tin tức mới hay không):
+    + 1. Quy trình thực hiện: Lập sơ đồ tư duy bằng text các bước từ lúc HĐND cấp tỉnh thông qua danh mục -> UBND cấp tỉnh ra Thông báo chấp thuận -> Thỏa thuận nhận quyền sử dụng đất -> Chuyển mục đích sử dụng đất. Nêu rõ Sở Nông nghiệp và Môi trường tham mưu ở bước nào.
+    + 2. Thuận lợi & Cơ hội: Nêu rõ cơ chế thí điểm này tháo gỡ điểm nghẽn quỹ đất "không phải là đất ở" cho Chủ đầu tư như thế nào so với Luật Đất đai trước đây.
+    + 3. Vướng mắc & Rủi ro thực tiễn: Đánh giá những khó khăn trong việc đàm phán giá đất với người dân, sự lúng túng của cơ quan nhà nước khi áp dụng Nghị định hướng dẫn, hoặc rủi ro pháp lý nếu thỏa thuận không thành công 100% diện tích.
   - Thẩm quyền thực hiện: Nêu rõ vai trò của HĐND, UBND cấp tỉnh, và Sở Nông nghiệp và Môi trường.
 
 * TIÊU ĐỀ BƯỚC DO (Thực thi - Cơ chế CTCTĐT hiện hành): 
-  - Phân tích quy trình theo Điều 24, Điều 25 Luật Đầu tư 143/2025/QH15.
-  - Thẩm quyền thực hiện: Quốc hội, Thủ tướng, UBND cấp tỉnh, và Sở Tài chính (làm cơ quan đầu mối tiếp nhận hồ sơ).
+  - Phân tích quy trình theo Điều 24, Điều 25 Luật Đầu tư 143/2025/QH15. Thẩm quyền thực hiện: Quốc hội, Thủ tướng, UBND cấp tỉnh, Sở Tài chính.
 
 * TIÊU ĐỀ BƯỚC ACT (Đánh giá tình huống - IRAC): 
-  - Xử lý 1 vướng mắc (Giao đất, chuyển mục đích...). 
-  - Thẩm quyền thực hiện: Sử dụng đúng tên Sở ban ngành mới (Sở Nông nghiệp và Môi trường, Sở Xây dựng...).
+  - Xử lý 1 vướng mắc (Giao đất, chuyển mục đích...). Thẩm quyền thực hiện: Sử dụng đúng tên Sở ban ngành mới (Sở Nông nghiệp và Môi trường, Sở Xây dựng...).
 
 * TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ & UK IDIOM: Bảng từ vựng và 1 câu thành ngữ.
 """
@@ -128,6 +124,7 @@ def send_email(markdown_content):
             .container {{ max-width: 850px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #8b0000; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }}
             h1 {{ color: #8b0000; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
             h2 {{ color: #8b0000; border-bottom: 2px solid #8b0000; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
+            h3 {{ color: #002b5e; font-size: 17px; margin-top: 20px; }}
             p, li {{ text-align: justify; text-justify: inter-word; margin-bottom: 15px; font-size: 16px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             table, th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
