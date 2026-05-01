@@ -10,23 +10,28 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def get_real_estate_news():
-    """Thu thập dữ liệu đầu vào từ các trang tin pháp luật & kinh tế"""
+    """Thu thập dữ liệu đầu vào từ các nguồn Pháp lý & Đấu thầu chuyên sâu"""
     sources = {
         "Chính phủ": "https://baochinhphu.vn/rss/phap-luat.rss",
-        "Thư viện Pháp luật": "https://thuvienphapluat.vn/rss/tin-tuc.rss",
-        "BĐS (VnExpress)": "https://vnexpress.net/rss/bat-dong-san.rss",
-        "Kinh tế (Tuổi Trẻ)": "https://tuoitre.vn/rss/kinh-doanh.rss"
+        "Kinh tế (Tuổi Trẻ)": "https://tuoitre.vn/rss/kinh-doanh.rss",
+        "Báo Đấu Thầu": "https://baodauthau.vn/rss/phap-luat-16.rss", 
+        "Đại Biểu Nhân Dân": "https://daibieunhandan.vn/rss/phap-luat-kinh-te.rss",
+        "VN Business Law": "https://vietnam-business-law.info/feed", 
+        "Công Báo Chính Phủ": "https://congbao.chinhphu.vn/rss" 
     }
     
     summary = ""
     for cat, url in sources.items():
         try:
             feed = feedparser.parse(url)
+            if not feed.entries:
+                continue
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
-            for entry in feed.entries[:5]:
+            # Lấy 3 tin mới nhất từ mỗi nguồn để AI tập trung phân tích sâu
+            for entry in feed.entries[:3]: 
                 desc = entry.get('summary', entry.get('description', ''))
                 clean_desc = re.sub('<[^<]+>', '', desc) 
-                short_desc = (clean_desc[:350] + '...') if len(clean_desc) > 350 else clean_desc
+                short_desc = (clean_desc[:300] + '...') if len(clean_desc) > 300 else clean_desc
                 summary += f"Tiêu đề: {entry.title}\nTóm tắt: {short_desc}\nLink: {entry.link}\n\n"
         except Exception as e:
             print(f"Lỗi tải nguồn {cat}: {e}")
@@ -34,7 +39,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI xử lý dữ liệu: Áp dụng tư duy Cố vấn Chiến lược & Lọc từ khóa"""
+    """Trợ lý AI xử lý dữ liệu: Cố vấn Chiến lược, Lọc từ khóa & Tư duy định lượng"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -64,26 +69,28 @@ BỘ QUY TẮC CỐT LÕI (TUÂN THỦ TUYỆT ĐỐI 100%):
    - Vi mô: Phải soi thấu điểm nghẽn (tắc ở khâu Sở Tài chính định giá, hay Sở Nông nghiệp & Môi trường rà soát nguồn gốc đất).
    - [Bắt buộc] So sánh hiệu quả tài chính và tiến độ: Đầu tư theo LĐT (Đấu thầu/đấu giá) vs Đầu tư theo NQ 171 (Thỏa thuận gom đất).
 
+4. VĂN PHONG ĐỊNH LƯỢNG & KỸ THUẬT PHÁP LÝ: 
+   - Trình bày súc tích bằng gạch đầu dòng. Hạn chế tối đa các từ ngữ cảm thán, sáo rỗng. 
+   - Đề xuất giải pháp phải có tính kỹ thuật pháp lý chuyên sâu (Ví dụ: Đề xuất xin điều chỉnh ranh 1/500, áp dụng hệ số K, kiến nghị cơ chế thu hồi bổ sung...). KHÔNG dùng văn mẫu chung chung như "đàm phán linh hoạt".
+
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
 CẤU TRÚC BÁO CÁO (Markdown chuyên nghiệp):
 * [Dòng 1] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ BƯỚC CHECK (Vĩ mô - Bức tranh Hạ tầng & Chính sách Miền Nam): Tác động của tin tức đến giá vốn, chi phí đền bù và sức mua của dự án.
+* TIÊU ĐỀ BƯỚC CHECK (Vĩ mô - Bức tranh Hạ tầng & Chính sách Miền Nam): Tác động của tin tức đến giá vốn, chi phí đền bù và sức mua của dự án (cố gắng đưa ra các ước tính định lượng nếu có thể).
 * TIÊU ĐỀ BƯỚC PLAN (Vi mô - So sánh & Nút thắt quy trình): Bảng so sánh chiến lược LĐT vs NQ 171. Chỉ rõ lộ trình từ CTCTĐT đến Mở bán đang có nguy cơ kẹt ở khâu nào tại Sở chuyên môn.
-* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171 - Quản trị rủi ro gom đất & CMĐSDĐ): Giải pháp khắc phục rủi ro "Đất da báo" (không thỏa thuận được 100%) và cách gỡ nút thắt tại Sở Nông nghiệp và Môi trường để có "Sổ hồng tổng".
-* TIÊU ĐỀ BƯỚC ACT (Giải pháp Cố vấn - Action Plan Về đích): Chọn 1 rủi ro vi mô (VD: Giá đất hậu sáp nhập tăng cao làm chậm nộp tiền sử dụng đất). Phân tích cấu trúc IRAC và đề xuất 3 bước hành động cụ thể cho CĐT.
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng chuyên ngành Mở bán BĐS & 1 thành ngữ thương mại Anh Quốc.
+* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171 - Quản trị rủi ro gom đất & CMĐSDĐ): Giải pháp kỹ thuật pháp lý khắc phục rủi ro "Đất da báo" và cách gỡ nút thắt tại Sở Nông nghiệp và Môi trường để có "Sổ hồng tổng".
+* TIÊU ĐỀ BƯỚC ACT (Giải pháp Cố vấn - Action Plan Về đích): Chọn 1 rủi ro vi mô (VD: Giá đất hậu sáp nhập tăng cao làm chậm nộp tiền sử dụng đất). Phân tích cấu trúc IRAC và đề xuất 3 bước hành động cụ thể, sắc bén cho CĐT.
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng chuyên ngành Mở bán BĐS & 1 thành ngữ thương mại.
 """
 
     try:
-        # Lựa chọn model thông minh, ưu tiên Flash để có tốc độ và độ ổn định cao
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
         
         raw_report = "AI Generation Failed."
         for model_name in models_to_try:
             try:
-                # Bỏ qua các phiên bản 1.0 cũ
                 if "1.0" in model_name: continue 
                 model = genai.GenerativeModel(model_name)
                 response = model.generate_content(prompt)
@@ -149,7 +156,7 @@ def send_email(markdown_content):
       </head>
       <body>
         <div class="container">
-            <h1>BÁO CÁO TỔNG HỢP & THAM MƯU CHIẾN LƯỢC</h1>
+            <h1>BÁO CÁO TỔNG HỢP & THAM MƯU CHIẾN LƯỢC ĐỊNH KỲ</h1>
             <p style="text-align: center;">Thực hiện bởi: <strong>Trợ lý AI</strong> | Phê duyệt chuyên môn: <strong>Vũ Quang Phát</strong></p>
             <div class="content">{html_body}</div>
             <div class="footer">Hệ thống Trợ lý Báo cáo Tự động | Vận hành bởi Gemini AI & GitHub Actions</div>
