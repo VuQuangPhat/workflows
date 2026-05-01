@@ -36,45 +36,43 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI với tư duy pháp lý hiện hành và quy trình ISO linh hoạt"""
+    """Phân tích dữ liệu bằng AI: Chuẩn hóa bộ máy sau 1/7/2025 & Nêu rõ thẩm quyền từng bước ISO"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
     genai.configure(api_key=api_key)
     
-    # Lấy thời gian thực để đưa vào prompt
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
     prompt = f"""
 Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ của bạn là lập báo cáo phân tích chuyên sâu từ dữ liệu tin tức, tuân thủ nghiêm ngặt quy trình PDCA (Plan - Do - Check - Act).
+Nhiệm vụ của bạn là lập báo cáo phân tích chuyên sâu từ dữ liệu tin tức, tuân thủ nghiêm ngặt quy trình ISO (PDCA) và bám sát khung pháp lý hiện hành.
 
 THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
 
-LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ 100%):
-1. CẬP NHẬT LUẬT HIỆN HÀNH: Hệ thống pháp luật đang thay đổi. Bạn BẮT BUỘC phải dùng và trích dẫn các văn bản pháp luật MỚI NHẤT sau đây trong mọi phân tích:
-   - Luật Đầu tư 143/2025/QH15 (Tuyệt đối KHÔNG nhắc đến Luật Đầu tư 2020 hay 61/2020/QH14).
-   - Luật Xây dựng 135/2025/QH15.
-   - Luật Kinh doanh Bất động sản 29/2023/QH15.
-   - Luật Đất đai 31/2024/QH15.
-   - Nghị quyết số 171/2024/QH15 của Quốc hội (Tuyệt đối KHÔNG viết nhầm thành NQ-CP).
-2. THUẬT NGỮ CHUYÊN MÔN: 
-   - Sử dụng đúng cụm từ "Chấp thuận chủ trương đầu tư" (viết tắt CTCTĐT), "Chấp thuận nhà đầu tư", "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất".
-   - Nghiêm cấm sử dụng các thuật ngữ tự chế, sai chuyên môn như "chấp thuận nhu cầu sử dụng đất".
+LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
+1. VỀ LUẬT VÀ THUẬT NGỮ CHUYÊN MÔN: 
+   - CHỈ ĐƯỢC PHÉP dùng cấu trúc của Luật Đầu tư 143/2025/QH15 (Điều 24: Dự án thuộc diện CTCTĐT; Điều 25: Thẩm quyền CTCTĐT).
+   - Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
+   - Thuật ngữ chuẩn: "Chấp thuận chủ trương đầu tư" (CTCTĐT), "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất". Nghiêm cấm dùng từ "chấp thuận nhu cầu sử dụng đất".
+2. VỀ TÊN GỌI SỞ BAN NGÀNH SAU 1/7/2025:
+   - Hệ thống tổ chức các Sở, Ban, Ngành đã thay đổi toàn bộ từ 1/7/2025. Bắt buộc phải rà soát, kiểm chứng và sử dụng ĐÚNG danh xưng của các cơ quan có thẩm quyền MỚI NHẤT. Nếu dữ liệu báo chí dùng tên cũ, bạn phải tự động hiệu chỉnh lại cho đúng cơ cấu hiện hành.
+3. VỀ NGHỊ QUYẾT 171/2024/QH15 & THẨM QUYỀN TỪNG BƯỚC ISO:
+   - Trong mỗi bước phân tích (Plan - Do - Check - Act), BẮT BUỘC phải làm rõ: THẨM QUYỀN thuộc về ai? (Quốc hội, Thủ tướng, HĐND cấp tỉnh, UBND cấp tỉnh, hay các cơ quan chuyên môn tương ứng).
+   - Với NQ 171/2024/QH15: Phân tích sâu vướng mắc về thời điểm xin văn bản chấp thuận của UBND cấp tỉnh. Thẩm quyền quyết định danh mục là của HĐND, thẩm quyền ra Thông báo chấp thuận là của UBND. Trình tự thực hiện thế nào?
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
-YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong chuẩn mực, logic sắc bén.
-KHÔNG sử dụng đánh số cứng (1, 2, 3...) cho các tiêu đề chính. Tùy biến tên tiêu đề sao cho phù hợp với nội dung phân tích hôm nay, nhưng phải đảm bảo đi qua đủ 4 bước quy trình sau:
+YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong sắc bén, thực chiến. KHÔNG đánh số cứng (1, 2, 3...) cho tiêu đề chính. Tùy biến tiêu đề cho linh hoạt và đúng trọng tâm tin tức, nhưng phải tuân thủ 5 phần sau:
 
 CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ 1 (Tương ứng bước CHECK - Nhận diện & Cảnh báo): Tổng hợp tin tức 24h qua. Phải có phần Cảnh báo hiệu lực văn bản (chỉ rõ văn bản nào sắp ban hành, vừa có hiệu lực, hoặc vừa bị bãi bỏ).
-* TIÊU ĐỀ 2 (Tương ứng bước PLAN - Chuyên đề NQ 171/2024/QH15): Phân tích tiến độ tháo gỡ điểm nghẽn hoặc tin tức về NQ 171/2024/QH15. Nếu không có tin mới, hãy tự thiết lập một Check-list quy trình rủi ro thực chiến cho Chủ đầu tư khi thỏa thuận nhận QSDĐ theo Nghị quyết này.
-* TIÊU ĐỀ 3 (Tương ứng bước DO - Cơ chế CTCTĐT): Phân tích quy trình, thủ tục CTCTĐT dựa trên khung Luật Đầu tư 143/2025/QH15 và Luật Đất đai 31/2024/QH15. 
-* TIÊU ĐỀ 4 (Tương ứng bước ACT - Thực chiến tình huống theo IRAC): Trích xuất 1 vướng mắc từ tin tức hoặc giả định tình huống thực tế và phân tích theo: Issue - Rule (Áp dụng đúng luật mới nêu trên) - Application - Conclusion.
-* TIÊU ĐỀ 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ BĐS & UK IDIOM (LEVEL B2): Bảng từ vựng và 1 câu thành ngữ đàm phán thương mại.
+* TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): Tổng hợp tin tức. Chỉ rõ văn bản nào sắp ban hành, vừa có hiệu lực hoặc vừa bị bãi bỏ. Nêu rõ thẩm quyền rà soát, theo dõi của CĐT/Chuyên viên pháp lý ở bước này.
+* TIÊU ĐỀ BƯỚC PLAN (Hoạch định - Chuyên đề NQ 171/2024/QH15): Đưa ra góc nhìn sâu về thủ tục triển khai NQ 171. CHỈ RÕ THẨM QUYỀN của HĐND và UBND cấp tỉnh trong việc đưa dự án vào danh mục và ra văn bản chấp thuận. Nếu không có tin mới, lập Checklist phòng rủi ro cho CĐT khi thỏa thuận quỹ đất.
+* TIÊU ĐỀ BƯỚC DO (Thực thi - Cơ chế CTCTĐT hiện hành): Phân tích quy trình theo Điều 24 Luật Đầu tư 143/2025/QH15. CHỈ RÕ THẨM QUYỀN quyết định CTCTĐT theo Điều 25 Luật Đầu tư 143/2025/QH15 (Chỉ rõ dự án nào thuộc Quốc hội, Thủ tướng, UBND cấp tỉnh...).
+* TIÊU ĐỀ BƯỚC ACT (Đánh giá tình huống - IRAC): Xử lý 1 vướng mắc từ tin (Giao đất, chuyển mục đích, bồi thường...). Nêu rõ THẨM QUYỀN giải quyết tình huống này thuộc về cơ quan quản lý nhà nước nào (sử dụng tên gọi cơ quan mới nhất sau 1/7/2025).
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ & UK IDIOM: Bảng từ vựng và 1 câu thành ngữ.
 """
 
     try:
