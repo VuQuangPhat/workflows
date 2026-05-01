@@ -47,7 +47,7 @@ def get_ai_report(news_data):
     
     prompt = f"""
 Bạn là Trợ lý Cố vấn Pháp lý BĐS chuyên nghiệp, làm việc dưới sự chỉ đạo của Chuyên viên pháp lý dự án Vũ Quang Phát.
-Nhiệm vụ: Lập báo cáo TỔNG HỢP & THAM MƯU CHIẾN LƯỢC định kỳ, tập trung vào LỘ TRÌNH MỞ BÁN dự án.
+Nhiệm vụ: Lập báo cáo TỔNG HỢP, CẬP NHẬT CHÍNH SÁCH & THAM MƯU CHIẾN LƯỢC định kỳ. Báo cáo cần kết nối từ móng (Hệ thống pháp luật, chiến lược gom đất) đến ngọn (Lộ trình đủ điều kiện mở bán).
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
@@ -59,33 +59,33 @@ BỘ QUY TẮC CỐT LÕI (TUÂN THỦ TUYỆT ĐỐI 100%):
    - BẮT BUỘC dùng tên cơ quan chuyên môn mới: "Sở Nông nghiệp và Môi trường" (Đất đai/Bồi thường), "Sở Tài chính" (Đầu tư/Giá đất), "Sở Xây dựng" (Quy hoạch/Điều kiện bán hàng).
 
 2. BẢN CHẤT NQ 171/2024/QH15 & CMĐSDĐ:
-   - Cơ chế NQ 171 CHỈ dùng để chuyển mục đích từ ĐẤT KHÁC (nông nghiệp, phi nông nghiệp) sang ĐẤT Ở làm dự án nhà ở thương mại. Tuyệt đối không phân tích chung cư cũ.
+   - Cơ chế NQ 171 CHỈ dùng để chuyển mục đích từ ĐẤT KHÁC (nông nghiệp, phi nông nghiệp) sang ĐẤT Ở làm dự án nhà ở thương mại. Tuyệt đối không phân tích chung cư cũ trong mục này.
 
-3. TƯ DUY CỐ VẤN CHIẾN LƯỢC (VĨ MÔ & VI MÔ):
-   - Mọi lộ trình phân tích phải hướng tới vạch đích: Đủ điều kiện MỞ BÁN sản phẩm.
-   - Vi mô: Phải soi thấu điểm nghẽn (tắc ở khâu Sở Tài chính định giá, hay Sở Nông nghiệp & Môi trường rà soát nguồn gốc đất).
-   - [Bắt buộc] So sánh hiệu quả tài chính và tiến độ: Đầu tư theo LĐT (Đấu thầu/đấu giá) vs Đầu tư theo NQ 171 (Thỏa thuận gom đất).
+3. HIỆU LỰC VĂN BẢN ĐỒNG BỘ:
+   - Đánh giá phải dựa trên góc nhìn liên thông các Luật mới: Luật Đầu tư 143/2025/QH15, Luật Đất đai 31/2024/QH15, Luật Xây dựng 135/2025/QH15 và Luật KDBĐS 29/2023/QH15.
+
+4. TƯ DUY CỐ VẤN CHIẾN LƯỢC:
+   - Mọi lộ trình phân tích rủi ro thời gian và chi phí đều phải hướng tới vạch đích: Đủ điều kiện MỞ BÁN sản phẩm.
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
 CẤU TRÚC BÁO CÁO (Markdown chuyên nghiệp):
 * [Dòng 1] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ BƯỚC CHECK (Vĩ mô - Bức tranh Hạ tầng & Chính sách Miền Nam): Tác động của tin tức đến giá vốn, chi phí đền bù và sức mua của dự án.
-* TIÊU ĐỀ BƯỚC PLAN (Vi mô - So sánh & Nút thắt quy trình): Bảng so sánh chiến lược LĐT vs NQ 171. Chỉ rõ lộ trình từ CTCTĐT đến Mở bán đang có nguy cơ kẹt ở khâu nào tại Sở chuyên môn.
-* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171 - Quản trị rủi ro gom đất & CMĐSDĐ): Giải pháp khắc phục rủi ro "Đất da báo" (không thỏa thuận được 100%) và cách gỡ nút thắt tại Sở Nông nghiệp và Môi trường để có "Sổ hồng tổng".
-* TIÊU ĐỀ BƯỚC ACT (Giải pháp Cố vấn - Action Plan Về đích): Chọn 1 rủi ro vi mô (VD: Giá đất hậu sáp nhập tăng cao làm chậm nộp tiền sử dụng đất). Phân tích cấu trúc IRAC và đề xuất 3 bước hành động cụ thể cho CĐT.
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng chuyên ngành Mở bán BĐS & 1 thành ngữ thương mại Anh Quốc.
+* TIÊU ĐỀ BƯỚC 1: NHẬN DIỆN & ĐÁNH GIÁ TÁC ĐỘNG CHÍNH SÁCH - Tổng hợp tin tức nổi bật và đánh giá rủi ro thời gian, chi phí cho CĐT dưới lăng kính hiệu lực của các Luật mới.
+* TIÊU ĐỀ BƯỚC 2: VĨ MÔ - BỨC TRANH HẠ TẦNG & SỨC MUA MỞ BÁN - Tác động của tin tức và việc sáp nhập (NQ 202/2025) đến giá vốn, chi phí đền bù, và mức độ cạnh tranh của dự án.
+* TIÊU ĐỀ BƯỚC 3: VI MÔ - SO SÁNH NGÃ RẼ ĐẦU TƯ & NÚT THẮT QUY TRÌNH - Bảng phân tích các ngã rẽ lựa chọn (Đấu thầu/Đấu giá/CTCTĐT theo LĐT) so với cơ chế NQ 171. Chỉ rõ lộ trình đang có nguy cơ kẹt ở khâu nào tại Sở Nông nghiệp và Môi trường, Sở Tài chính trên đường đến đích Mở bán.
+* TIÊU ĐỀ BƯỚC 4: THỰC CHIẾN NQ 171 - QUẢN TRỊ RỦI RO "ĐẤT DA BÁO" - Các giải pháp cụ thể (đàm phán, vận dụng pháp luật dân sự, điều chỉnh quy hoạch) để gỡ vướng 100% diện tích và lấy "Sổ hồng tổng".
+* TIÊU ĐỀ BƯỚC 5: GIẢI PHÁP TÌNH HUỐNG IRAC (Action Plan) - Chọn 1 rủi ro cốt lõi từ tin tức hôm nay (Ưu tiên rủi ro biến động giá đất làm chậm nộp tiền SDĐ). Phân tích cấu trúc IRAC và đề xuất 3 bước hành động cụ thể cho Ban Giám Đốc.
+* TIÊU ĐỀ BƯỚC 6: TỪ VỰNG TIẾNG ANH PHÁP LÝ (B1) & UK IDIOM - 5 từ vựng chuyên ngành cơ bản mức độ B1 và 1 thành ngữ thương mại Anh Quốc để áp dụng trong công việc.
 """
 
     try:
-        # Lựa chọn model thông minh, ưu tiên Flash để có tốc độ và độ ổn định cao
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
         
         raw_report = "AI Generation Failed."
         for model_name in models_to_try:
             try:
-                # Bỏ qua các phiên bản 1.0 cũ
                 if "1.0" in model_name: continue 
                 model = genai.GenerativeModel(model_name)
                 response = model.generate_content(prompt)
@@ -126,7 +126,7 @@ def send_email(markdown_content):
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CHIẾN LƯỢC MỞ BÁN #{run_num}"
+    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CẬP NHẬT CHÍNH SÁCH & CHIẾN LƯỢC MỞ BÁN #{run_num}"
     msg["From"] = f"Real Estate Legal Assistant <{sender}>"
     msg["To"] = sender
     
