@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI chuyên sâu: Bóc tách chi tiết quy trình NQ 171 và Lộ trình thực chiến"""
+    """Trợ lý AI xử lý dữ liệu: Thẩm định nội dung chuyên môn & Quy trình NQ 171"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -45,36 +45,38 @@ def get_ai_report(news_data):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
-    # PROMPT TẬP TRUNG TRỌNG TÂM VÀO NQ 171
     prompt = f"""
-Bạn là Trợ lý Cố vấn Pháp lý BĐS cấp cao. Nhiệm vụ trọng tâm: Phân tích chi tiết quy trình thí điểm theo **NGHỊ QUYẾT 171**.
+Bạn là Trợ lý Cố vấn Pháp lý BĐS chuyên nghiệp. Nhiệm vụ của bạn là lập báo cáo chuyên sâu về QUY TRÌNH ĐẦU TƯ DỰ ÁN BẤT ĐỘNG SẢN.
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
-BỘ QUY TẮC NỘI DUNG (TUÂN THỦ TUYỆT ĐỐI):
+BỘ QUY TẮC THẨM ĐỊNH NỘI DUNG (TUÂN THỦ TUYỆT ĐỐI):
 
-1. TRỌNG TÂM NQ 171 (THỎA THUẬN GOM ĐẤT):
-   - Phân tích chi tiết điều kiện áp dụng NQ 171: Loại đất (không chỉ đất ở), quy hoạch, phù hợp chương trình nhà ở.
-   - Làm rõ quy trình "Thỏa thuận nhận quyền sử dụng đất": Cách xác lập văn bản thỏa thuận, thời điểm đặt cọc (Deposit) và rủi ro pháp lý khi dân "quay xe".
+1. BỘ LỌC CHUYÊN MÔN (HÀNG RÀO NỘI DUNG):
+   - CHỈ TRÍCH XUẤT tin tức có tác động trực tiếp đến: Pháp lý dự án, giá đất, quy hoạch xây dựng, hạ tầng kỹ thuật, bồi thường giải phóng mặt bằng.
+   - LOẠI BỎ hoàn toàn các tin tức kinh tế vĩ mô chung chung không liên quan đến BĐS (Ví dụ: chính trị quốc tế, vận tải hàng không, du lịch, kinh doanh hàng tiêu dùng...) ngay cả khi chúng xuất hiện trong dữ liệu thô.
+   - Tuyệt đối không đưa các tin về eo biển Hormuz, Vietjet hay du lịch Cô Tô vào báo cáo nếu nó không ảnh hưởng đến chi phí/pháp lý dự án cụ thể.
 
-2. LỘ TRÌNH 11 BƯỚC MỞ BÁN THEO NQ 171:
-   Mô tả chi tiết quá trình từ "Thỏa thuận" đến "Văn bản đủ điều kiện bán hàng":
-   - Bước 1-3: Chấp thuận chủ trương đầu tư (Sở Tài chính thẩm định năng lực) & Công nhận Chủ đầu tư.
-   - Bước 4-7: Quy hoạch 1/500, Chuyển mục đích sử dụng đất, thẩm định giá đất (Valuation) tại Sở Tài chính.
-   - Bước 8-11: Hoàn thành nghĩa vụ tài chính, Giấy phép xây dựng (Permit), Nghiệm thu hạ tầng và thông báo mở bán.
+2. QUY TRÌNH NQ 171 & LỘ TRÌNH VỀ ĐÍCH MỞ BÁN:
+   - Phải làm rõ lộ trình 11 bước từ: Thỏa thuận gom đất (Đất khác) -> Chấp thuận chủ trương (CTCTĐT) -> Quy hoạch 1/500 -> Quyết định CMDSDĐ (NQ 171) -> Định giá đất -> Sổ hồng tổng -> GPXD -> Thông báo đủ điều kiện mở bán.
+   - CHỈ ĐÍCH DANH NÚT THẮT: Điểm nghẽn thường kẹt tại Sở Nông nghiệp và Môi trường (rà soát nguồn gốc đất phức tạp) và Sở Tài chính (định giá đất chậm trễ hậu sáp nhập NQ 202/2025).
 
-3. ĐIỂM NGHẼN SỞ NGÀNH:
-   - Nút thắt cực đại tại **Sở Tài chính**: Thẩm định giá đất cụ thể hậu sáp nhập NQ 202.
-   - Vai trò rà soát nguồn gốc đất của **Sở Nông nghiệp và Môi trường** để khớp với tiêu chuẩn NQ 171.
+3. ĐỊA GIỚI & BỘ MÁY (SAU 01/07/2025):
+   - Bình Dương, BR-VT đã sáp nhập vào TP.HCM. Cấm dùng "UBND Quận". 
+   - Bắt buộc dùng tên cơ quan mới: Sở Nông nghiệp và Môi trường, Sở Tài chính, Sở Xây dựng.
 
-4. YÊU CẦU TRÌNH BÀY:
-   - Sử dụng BẢNG SO SÁNH/TIẾN ĐỘ cho quy trình 11 bước.
-   - Phân tích IRAC cho rủi ro: "Dự án tắc nghẽn do không đạt thỏa thuận 100% diện tích đất (vùng da báo)".
-   - Ngôn ngữ: 5 từ vựng B1 (Procedure, Contract, Compliance, Lease, Regulation) và 1 UK Idiom (ví dụ: 'The devil is in the detail').
+4. NGOẠI NGỮ B1: 
+   - Sử dụng từ vựng tiếng Anh pháp lý cơ bản (B1): Deposit, Lease, Permit, Ownership, Project. KHÔNG dùng từ C1/C2 phức tạp.
+   - 1 UK Idiom thương mại.
 
-5. ĐỊA GIỚI: Bình Dương, BR-VT đã vào TP.HCM. Tuyệt đối không dùng từ "tỉnh", không dùng "Quận".
+Dữ liệu thô từ báo chí: {news_data}
 
-Dữ liệu thô: {news_data}
+YÊU CẦU CẤU TRÚC:
+Tự do chia tiêu đề nhưng phải đảm bảo:
+- Khối 1: Phân tích tin tức chuyên môn (tác động đến giá vốn, đền bù).
+- Khối 2: Bảng chi tiết Lộ trình NQ 171, điểm nghẽn tại các Sở và giải pháp gỡ vướng thực chiến.
+- Khối 3: Phân tích IRAC cho rủi ro pháp lý/tài chính trọng tâm nhất.
+- Khối 4: 5 Từ vựng B1 & 1 UK Idiom.
 """
 
     try:
@@ -89,19 +91,20 @@ Dữ liệu thô: {news_data}
                 response = model.generate_content(prompt)
                 raw_report = response.text
                 break
-            except Exception:
+            except Exception as e:
+                print(f"Lỗi khi thử model {model_name}: {e}")
                 continue
                 
-        # --- BỘ LỌC CƯỠNG CHẾ THUẬT NGỮ PHÁP LÝ ---
+        # --- BỘ LỌC CƯỠNG CHẾ PYTHON ---
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
-            "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
+            "Sở TN&MT": "Sold Nông nghiệp và Môi trường",
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
             "Sở KH&ĐT": "Sở Tài chính",
             "UBND quận": "UBND TP.HCM/Thành phố trực thuộc",
+            "Ủy ban nhân dân quận": "UBND TP.HCM/Thành phố trực thuộc",
             "tỉnh Bình Dương": "TP.HCM",
-            "tỉnh Bà Rịa": "TP.HCM",
-            "tỉnh BR-VT": "TP.HCM"
+            "tỉnh Bà Rịa": "TP.HCM"
         }
         
         cleaned_report = raw_report
@@ -121,7 +124,7 @@ def send_email(markdown_content):
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[PHÁP LÝ BĐS] CHIẾN LƯỢC NQ 171 & LỘ TRÌNH MỞ BÁN #{run_num}"
+    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CHIẾN LƯỢC DỰ ÁN & MỞ BÁN #{run_num}"
     msg["From"] = f"Real Estate Legal Assistant <{sender}>"
     msg["To"] = sender
     
@@ -132,23 +135,24 @@ def send_email(markdown_content):
       <head>
         <style>
             body {{ font-family: 'Times New Roman', serif; background-color: #f4f7f6; padding: 30px; line-height: 1.8; color: #1a1a1a; }}
-            .container {{ max-width: 950px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #1a237e; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 4px; }}
-            h1 {{ color: #1a237e; text-align: center; text-transform: uppercase; font-size: 24px; border-bottom: 2px solid #eee; padding-bottom: 20px; }}
-            h2 {{ color: #1a237e; border-left: 5px solid #1a237e; padding-left: 15px; margin-top: 40px; font-size: 20px; text-transform: uppercase; }}
-            h3 {{ color: #b71c1c; font-size: 18px; margin-top: 25px; font-weight: bold; }}
+            .container {{ max-width: 900px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #004d40; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 4px; }}
+            h1 {{ color: #004d40; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 2px solid #eee; padding-bottom: 20px; }}
+            h2 {{ color: #004d40; border-bottom: 2px solid #004d40; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
+            h3 {{ color: #bf360c; font-size: 17px; margin-top: 20px; font-weight: bold; }}
             p, li {{ text-align: justify; margin-bottom: 15px; font-size: 16px; }}
-            table {{ width: 100%; border-collapse: collapse; margin: 25px 0; }}
-            table, th, td {{ border: 1px solid #cfd8dc; padding: 15px; text-align: left; }}
-            th {{ background-color: #f5f5f5; color: #1a237e; font-weight: bold; }}
-            .footer {{ text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 50px; border-top: 1px solid #eee; padding-top: 20px; }}
+            table {{ width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fafafa; }}
+            table, th, td {{ border: 1px solid #ddd; padding: 12px; text-align: left; }}
+            th {{ background-color: #e0f2f1; color: #004d40; font-weight: bold; }}
+            .time-stamp {{ text-align: right; font-style: italic; color: #555; margin-bottom: 30px; font-weight: bold; }}
+            .footer {{ text-align: center; font-size: 11px; color: #888; margin-top: 50px; border-top: 1px solid #eee; padding-top: 15px; }}
         </style>
       </head>
       <body>
         <div class="container">
-            <h1>BÁO CÁO CHIẾN LƯỢC: QUY TRÌNH NQ 171 & LỘ TRÌNH THỰC CHIẾN</h1>
-            <p style="text-align: center; font-weight: bold;">Người phụ trách chuyên môn: Vũ Quang Phát (ULAW)</p>
+            <h1>BÁO CÁO CHIẾN LƯỢC DỰ ÁN ĐẦU TƯ BĐS</h1>
+            <p style="text-align: center;">Thực hiện bởi: <strong>Trợ lý AI</strong> | Phê duyệt chuyên môn: <strong>Vũ Quang Phát</strong></p>
             <div class="content">{html_body}</div>
-            <div class="footer">Báo cáo tự động hóa | Vận hành bởi Gemini AI cho mục đích Pháp lý BĐS chuyên sâu</div>
+            <div class="footer">Hệ thống Trợ lý Báo cáo Tự động | Vận hành bởi Gemini AI & GitHub Actions</div>
         </div>
       </body>
     </html>
@@ -159,7 +163,7 @@ def send_email(markdown_content):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print("Trợ lý đã gửi báo cáo chiến lược NQ 171 thành công!")
+        print("Trợ lý đã gửi báo cáo thành công!")
     except Exception as e:
         print(f"Lỗi gửi mail: {e}")
 
