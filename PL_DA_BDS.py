@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Tích hợp chuyên đề sâu NQ 171/2024/QH15"""
+    """Phân tích dữ liệu bằng AI: Tách biệt DA ĐT tổng quát và DA NQ 171"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -52,20 +52,21 @@ Nhiệm vụ của bạn là lập báo cáo phân tích chuyên sâu từ dữ 
 THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
 
 LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
-1. VỀ LUẬT VÀ THUẬT NGỮ CHUYÊN MÔN: 
+1. VỀ NGHỊ QUYẾT 171/2024/QH15: 
+   - TUYỆT ĐỐI KHÔNG tự bịa đặt hoặc mở rộng sai phạm vi của Nghị quyết. 
+   - Tên và phạm vi chính xác là: "Nghị quyết về thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất". (Tuyệt đối KHÔNG nhắc đến "dự án hỗn hợp", "công trình công cộng").
+2. VỀ LUẬT VÀ THUẬT NGỮ CHUYÊN MÔN: 
    - CHỈ ĐƯỢC PHÉP dùng cấu trúc của Luật Đầu tư 143/2025/QH15 (Điều 24: Dự án thuộc diện CTCTĐT; Điều 25: Thẩm quyền CTCTĐT).
    - Áp dụng chuẩn xác: Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
    - Thuật ngữ chuẩn: "Chấp thuận chủ trương đầu tư" (CTCTĐT), "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất". Nghiêm cấm dùng từ "chấp thuận nhu cầu sử dụng đất".
-
-2. VỀ TÊN GỌI SỞ BAN NGÀNH (ÁP DỤNG QUY ĐỊNH MỚI TỪ SAU 01/07/2025):
-   - Hệ thống tổ chức cơ quan hành chính đã sáp nhập. BẮT BUỘC SỬ DỤNG BẢNG QUY ĐỔI SAU:
-     + KHÔNG dùng "Sở Tài nguyên và Môi trường" -> Bắt buộc dùng "Sở Nông nghiệp và Môi trường".
-     + KHÔNG dùng "Sở Kế hoạch và Đầu tư" -> Bắt buộc dùng "Sở Tài chính".
-     + KHÔNG dùng "Sở Quy hoạch - Kiến trúc" -> Bắt buộc dùng "Sở Xây dựng".
+3. VỀ TÊN GỌI SỞ BAN NGÀNH (ÁP DỤNG QUY ĐỊNH MỚI TỪ SAU 01/07/2025):
+   - KHÔNG dùng "Sở Tài nguyên và Môi trường" -> Bắt buộc dùng "Sở Nông nghiệp và Môi trường".
+   - KHÔNG dùng "Sở Kế hoạch và Đầu tư" -> Bắt buộc dùng "Sở Tài chính".
+   - KHÔNG dùng "Sở Quy hoạch - Kiến trúc" -> Bắt buộc dùng "Sở Xây dựng".
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
-YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong sắc bén, thực chiến. KHÔNG đánh số cứng (1, 2, 3...) cho tiêu đề chính. Tùy biến tiêu đề cho linh hoạt và đúng trọng tâm tin tức, nhưng phải tuân thủ 5 phần sau:
+YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong sắc bén, thực chiến. KHÔNG đánh số cứng (1, 2, 3...) cho tiêu đề chính. Tùy biến tiêu đề cho linh hoạt, nhưng phải tuân thủ luồng phân tích làm 2 mũi nhọn (Tổng quát và NQ 171) theo cấu trúc 5 bước sau:
 
 CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
@@ -73,15 +74,17 @@ CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): 
   - Tổng hợp tin tức, cảnh báo hiệu lực văn bản. Nêu rõ thẩm quyền rà soát thuộc về ai.
 
-* TIÊU ĐỀ BƯỚC PLAN (Phân tích chuyên sâu DA ĐT theo Nghị quyết 171/2024/QH15): 
-  - BẮT BUỘC TRÌNH BÀY ĐỦ 3 TIỂU MỤC SAU (dù có tin tức mới hay không):
-    + 1. Quy trình thực hiện: Lập sơ đồ tư duy bằng text các bước từ lúc HĐND cấp tỉnh thông qua danh mục -> UBND cấp tỉnh ra Thông báo chấp thuận -> Thỏa thuận nhận quyền sử dụng đất -> Chuyển mục đích sử dụng đất. Nêu rõ Sở Nông nghiệp và Môi trường tham mưu ở bước nào.
-    + 2. Thuận lợi & Cơ hội: Nêu rõ cơ chế thí điểm này tháo gỡ điểm nghẽn quỹ đất "không phải là đất ở" cho Chủ đầu tư như thế nào so với Luật Đất đai trước đây.
-    + 3. Vướng mắc & Rủi ro thực tiễn: Đánh giá những khó khăn trong việc đàm phán giá đất với người dân, sự lúng túng của cơ quan nhà nước khi áp dụng Nghị định hướng dẫn, hoặc rủi ro pháp lý nếu thỏa thuận không thành công 100% diện tích.
-  - Thẩm quyền thực hiện: Nêu rõ vai trò của HĐND, UBND cấp tỉnh, và Sở Nông nghiệp và Môi trường.
+* TIÊU ĐỀ BƯỚC PLAN (Phân tích pháp lý DA ĐT BĐS TỔNG QUÁT): 
+  - Phân tích cơ chế, thủ tục quy trình chung dự án ĐT BĐS theo Điều 24, Điều 25 Luật Đầu tư 143/2025/QH15.
+  - Thẩm quyền thực hiện: Nêu rõ Quốc hội, Thủ tướng, UBND cấp tỉnh, Sở Tài chính.
 
-* TIÊU ĐỀ BƯỚC DO (Thực thi - Cơ chế CTCTĐT hiện hành): 
-  - Phân tích quy trình theo Điều 24, Điều 25 Luật Đầu tư 143/2025/QH15. Thẩm quyền thực hiện: Quốc hội, Thủ tướng, UBND cấp tỉnh, Sở Tài chính.
+* TIÊU ĐỀ BƯỚC DO (Phân tích chuyên sâu DA ĐT THÍ ĐIỂM THEO NQ 171/2024/QH15): 
+  - Nhấn mạnh đúng đối tượng: Dự án nhà ở thương mại thông qua thỏa thuận nhận QSDĐ / đang có QSDĐ.
+  - BẮT BUỘC TRÌNH BÀY ĐỦ 3 TIỂU MỤC (dù có tin tức mới hay không):
+    + 1. Trình tự thực hiện & Cách tiếp cận: Lập sơ đồ các bước (HĐND cấp tỉnh duyệt danh mục -> UBND cấp tỉnh ra Thông báo -> Thỏa thuận nhận QSDĐ -> Chuyển mục đích sử dụng đất).
+    + 2. Thuận lợi & Cơ chế tháo gỡ: Đánh giá lợi thế cho CĐT khi tiếp cận quỹ đất không phải đất ở.
+    + 3. Vướng mắc & Rủi ro thực tiễn: Những khó khăn trong đàm phán đất đai, lúng túng trong chỉ đạo của địa phương.
+  - Thẩm quyền thực hiện: Nêu rõ vai trò của HĐND, UBND cấp tỉnh, và Sở Nông nghiệp và Môi trường.
 
 * TIÊU ĐỀ BƯỚC ACT (Đánh giá tình huống - IRAC): 
   - Xử lý 1 vướng mắc (Giao đất, chuyển mục đích...). Thẩm quyền thực hiện: Sử dụng đúng tên Sở ban ngành mới (Sở Nông nghiệp và Môi trường, Sở Xây dựng...).
