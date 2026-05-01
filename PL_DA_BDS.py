@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Tích hợp Bộ lọc Cưỡng chế Tên Cơ quan"""
+    """Phân tích dữ liệu bằng AI: Case study độc lập, phân tích sâu, không vẽ vời hình thức"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -47,37 +47,35 @@ def get_ai_report(news_data):
     
     prompt = f"""
 Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ: Lập báo cáo THỰC CHIẾN, KHÔNG LÝ THUYẾT, tuân thủ ISO (PDCA), bám sát pháp lý và địa lý mới nhất.
+Nhiệm vụ: Lập báo cáo THỰC CHIẾN, ĐỘC LẬP VÀ SẮC BÉN, tuân thủ ISO (PDCA), bám sát pháp lý và địa lý mới nhất.
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
-LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
-1. CƠ CẤU TỔ CHỨC MỚI (BẮT BUỘC DÙNG CÁC TÊN NÀY CHO THẨM QUYỀN):
-   - Phụ trách Đất đai, Bồi thường, Giao đất, Môi trường: Gọi là "Sở Nông nghiệp và Môi trường".
-   - Phụ trách Đầu tư, Thẩm định CTCTĐT, Đấu thầu: Gọi là "Sở Tài chính".
-   - Phụ trách Quy hoạch, Kiến trúc, Cấp phép: Gọi là "Sở Xây dựng".
-   - (Tuyệt đối chỉ dùng 3 tên Sở trên khi nhắc đến cơ quan chuyên môn cấp tỉnh).
+LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ 100%):
+1. GÓC ĐỘ PHÂN TÍCH (CASE STUDY ĐỘC LẬP):
+   - Phân tích các dự án trên báo như những Case Study khách quan của thị trường. TUYỆT ĐỐI KHÔNG giả định công ty của Phát là chủ đầu tư của các dự án đó (Không viết "CĐT chúng ta", "Công ty của Phát").
+   - TRỰC DIỆN VÀO CHUYÊN MÔN: Tuyệt đối KHÔNG viết định dạng thư tín nội bộ. KHÔNG dùng các từ "TO: Ban Giám đốc", "FROM:", "DATE:", "SUBJECT:". Hãy đi thẳng vào lập luận pháp lý.
 
-2. ĐỊA GIỚI HÀNH CHÍNH (NGHỊ QUYẾT 202/2025/QH15):
-   - Toàn bộ Bình Dương và Bà Rịa - Vũng Tàu đã thuộc TP.HCM. Thẩm quyền cấp tỉnh cao nhất nay là UBND TP.HCM. Không gọi là tỉnh Bình Dương. (Ví dụ: TP. Thủ Dầu Một trực thuộc TP.HCM). Đồng Nai và Long An vẫn là tỉnh độc lập.
+2. CƠ CẤU TỔ CHỨC & ĐỊA GIỚI (SAU 01/07/2025):
+   - Toàn bộ Bình Dương và Bà Rịa - Vũng Tàu đã thuộc TP.HCM. Thẩm quyền cấp tỉnh cao nhất nay là UBND TP.HCM. (Ví dụ: "TP. Thủ Dầu Một, TP.HCM"). Đồng Nai và Long An vẫn là tỉnh độc lập.
+   - Gọi tên cơ quan đúng chức năng mới: "Sở Nông nghiệp và Môi trường" (Đất đai, bồi thường); "Sở Tài chính" (Đầu tư, CTCTĐT); "Sở Xây dựng" (Quy hoạch, cấp phép).
 
-3. KHÔNG VĂN MẪU LÝ THUYẾT: Đi thẳng vào VẤN ĐỀ THỰC TẾ của CĐT và HƯỚNG GIẢI QUYẾT.
+3. CHIỀU SÂU CHIẾN LƯỢC: 
+   - Trả lại sự sắc bén trong phân tích: Chỉ rõ rủi ro, điểm nghẽn, thời gian và giải pháp. 
+   - Phân tích sâu Điều 24, 25 Luật Đầu tư 143/2025/QH15.
+   - NQ 171/2024/QH15: Tập trung vào bài toán CĐT bên thứ 3 đi gom đất, vướng quy hoạch/đất da báo thì xử lý sao. 
+   - Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
 
-4. ĐIỂM NÓNG HẠ TẦNG & LUẬT MỚI: 
-   - Phân tích ảnh hưởng của Sân bay Long Thành, Vành đai 3, 4 đến các dự án đang xin CTCTĐT theo Luật Đầu tư 143/2025/QH15.
-   - NQ 171/2024/QH15: Phân tích thực tế gom đất thỏa thuận làm Nhà ở thương mại.
-   - Các luật: Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
-
-5. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng B1 - B2, thông dụng (Tenant, Landlord, Deposit, Contract, Permit...).
+4. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng B1 - B2, thông dụng (Tenant, Landlord, Deposit, Contract, Permit...).
 
 Dữ liệu thô từ báo chí: {news_data}
 
-CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt):
+CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt theo tin tức):
 * [Dòng 1] "Thời gian lập báo cáo: {current_time}"
 * TIÊU ĐỀ BƯỚC CHECK (Cảnh báo Pháp lý 24h): Tin tức trọng tâm. Thẩm quyền rà soát thuộc về ai.
-* TIÊU ĐỀ BƯỚC PLAN (Tiến độ CTCTĐT & Hạ tầng): Case Study thực tế tại TP.HCM (vùng Bình Dương/BR-VT cũ), Đồng Nai hoặc Long An xin CTCTĐT theo Luật Đầu tư 143/2025. Thẩm quyền giải quyết của Sở Tài chính và UBND.
-* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171/2024/QH15): Bài toán thỏa thuận đền bù quỹ đất. Vướng mắc & Quy trình gỡ rối của Sở Nông nghiệp và Môi trường.
-* TIÊU ĐỀ BƯỚC ACT (IRAC Plan trình Ban Giám đốc): Xử lý 1 vướng mắc. Cấu trúc IRAC. Conclusion là Action Plan cụ thể.
+* TIÊU ĐỀ BƯỚC PLAN (Điểm nóng Hạ tầng & Tiến độ CTCTĐT): Lấy 1-2 Case Study từ tin tức tại TP.HCM (gồm cả BD, BR-VT cũ), Đồng Nai, Long An. Đánh giá thực tế xin CTCTĐT theo Luật Đầu tư 143/2025. Thẩm quyền của UBND và Sở Tài chính.
+* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171/2024/QH15 - Bài toán thỏa thuận quỹ đất): Phân tích 1 Case Study thực tế. Điểm thuận lợi vs Vướng mắc (đất da báo, giá đền bù). Cơ quan gỡ rối: Sở Nông nghiệp và Môi trường.
+* TIÊU ĐỀ BƯỚC ACT (IRAC - Giải quyết vướng mắc thực tiễn): Đi thẳng vào Cấu trúc: Issue (Vấn đề) - Rule (Luật áp dụng) - Application (Phân tích) - Conclusion (Action plan tham mưu chiến lược, các bước thực hiện). KHÔNG làm form thư tín nội bộ.
 * TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng (Bảng) & 1 thành ngữ.
 """
 
@@ -95,7 +93,7 @@ CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt
             except:
                 continue
                 
-        # --- BỘ LỌC CƯỠNG CHẾ BẰNG PYTHON (Đảm bảo 100% không sót tên Sở cũ) ---
+        # --- BỘ LỌC CƯỠNG CHẾ BẰNG PYTHON ---
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
