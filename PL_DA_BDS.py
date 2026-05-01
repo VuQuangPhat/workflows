@@ -25,7 +25,7 @@ def get_real_estate_news():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
-            for entry in feed.entries[:5]: # Tăng lên 5 tin để gom nhiều dữ liệu dự án hơn
+            for entry in feed.entries[:5]:
                 desc = entry.get('summary', entry.get('description', ''))
                 clean_desc = re.sub('<[^<]+>', '', desc) 
                 short_desc = (clean_desc[:350] + '...') if len(clean_desc) > 350 else clean_desc
@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Thực chiến dự án, bám sát miền Nam & NQ 171"""
+    """Phân tích dữ liệu bằng AI: Chuẩn hóa bộ máy, pháp luật và địa giới hành chính mới nhất"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -47,47 +47,49 @@ def get_ai_report(news_data):
     
     prompt = f"""
 Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ của bạn là lập báo cáo THỰC CHIẾN, KHÔNG LÝ THUYẾT SUÔNG, tuân thủ nghiêm ngặt quy trình ISO (PDCA) và bám sát khung pháp lý hiện hành.
+Nhiệm vụ của bạn là lập báo cáo THỰC CHIẾN, TUYỆT ĐỐI KHÔNG LÝ THUYẾT SUÔNG, tuân thủ nghiêm ngặt quy trình ISO (PDCA) và bám sát khung pháp lý, địa lý MỚI NHẤT.
 
 THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
 
 LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
-1. CHỐNG BỆNH "LÝ THUYẾT SUÔNG": Tuyệt đối KHÔNG viết các đoạn văn định nghĩa, giải thích ưu/nhược điểm chung chung của luật. Mọi phân tích phải đi thẳng vào TÊN DỰ ÁN, ĐỊA PHƯƠNG, CON SỐ thực tế.
-2. TRỌNG TÂM DỰ ÁN MIỀN NAM & ĐẦU TƯ CÔNG: Phải có mục phân tích sự cộng hưởng giữa làn sóng đầu tư công (Cao tốc, Vành đai 3, 4, Sân bay Long Thành...) tác động đến tiến độ phê duyệt, giao đất của các dự án BĐS quanh khu vực phía Nam (TP.HCM, Bình Dương, Đồng Nai, Long An...).
-3. VỀ NGHỊ QUYẾT 171/2024/QH15: "Nghị quyết về thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất". Phân tích thẳng vào vướng mắc quy trình thực tế tại địa phương hiện nay.
-4. LUẬT & TÊN CƠ QUAN MỚI NHẤT (SAU 01/07/2025): 
+1. ĐỊA GIỚI HÀNH CHÍNH MỚI NHẤT (BẮT BUỘC THEO NGHỊ QUYẾT 202/2025/QH15):
+   - TỪ NGÀY 01/07/2025, TOÀN BỘ TỈNH BÌNH DƯƠNG VÀ TỈNH BÀ RỊA - VŨNG TÀU ĐÃ SÁP NHẬP VÀO THÀNH PHỐ HỒ CHÍ MINH.
+   - TUYỆT ĐỐI CẤM SỬ DỤNG cụm từ "tỉnh Bình Dương", "UBND tỉnh Bình Dương", "tỉnh Bà Rịa - Vũng Tàu". Phải gọi chuẩn xác là các đơn vị trực thuộc siêu đô thị TP.HCM (Ví dụ: "Thành phố Thủ Dầu Một, TP.HCM", "Thành phố Vũng Tàu, TP.HCM"). Thẩm quyền cấp tỉnh cao nhất ở các khu vực này nay thuộc về UBND TP.HCM.
+   - Tỉnh Đồng Nai và Tỉnh Long An vẫn là các tỉnh độc lập.
+
+2. CẤM VĂN MẪU LÝ THUYẾT: Nghiêm cấm giải thích luật chung chung. Mọi phân tích phải đi thẳng vào VẤN ĐỀ THỰC TẾ của Chủ đầu tư (CĐT) và HƯỚNG GIẢI QUYẾT.
+
+3. ĐIỂM NÓNG MIỀN NAM & ĐẦU TƯ CÔNG: Phân tích sự cộng hưởng của hạ tầng (Sân bay Long Thành, Vành đai 3, 4...) đến các dự án BĐS tại TP.HCM (đã bao gồm Bình Dương, BR-VT cũ), Đồng Nai, Long An. 
+
+4. VỀ NGHỊ QUYẾT 171/2024/QH15: Phân tích tình huống thực tiễn khi đi gom đất thỏa thuận làm Nhà ở thương mại (dân ép giá, chậm ra thông báo chấp thuận...) và cách gỡ rối tại địa phương.
+
+5. LUẬT & TÊN CƠ QUAN MỚI NHẤT (SAU 01/07/2025): 
    - Luật Đầu tư 143/2025/QH15; Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15. 
-   - Tên Sở mới: "Sở Nông nghiệp và Môi trường", "Sở Tài chính", "Sở Xây dựng".
-5. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng mức độ B1 - B2. Tuyệt đối KHÔNG dùng từ C1/C2 phức tạp.
+   - Tên Sở mới: "Sở Nông nghiệp và Môi trường", "Sở Tài chính", "Sở Xây dựng" thuộc UBND TP.HCM (và các tỉnh khác).
+
+6. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng mức độ B1 - B2, thông dụng (VD: Tenant, Landlord, Deposit, Contract, Permit...).
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
-YÊU CẦU TRÌNH BÀY: Markdown. Văn phong đi thẳng vào vấn đề của nhà đầu tư. Tùy biến tiêu đề cho linh hoạt, tuân thủ 5 bước sau:
+YÊU CẦU TRÌNH BÀY: Markdown. Tùy biến tiêu đề cho linh hoạt, tuân thủ 5 bước sau:
 
 CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
 
-* TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): 
-  - Điểm mặt đặt tên các dự án/chính sách vừa lên mặt báo. Tác động "tiền tươi thóc thật" đến rủi ro của CĐT.
-  - Thẩm quyền rà soát: Nêu rõ ai chịu trách nhiệm báo cáo.
+* TIÊU ĐỀ BƯỚC CHECK (Nhận diện Cảnh báo Pháp lý 24h): 
+  - Điểm mặt tin tức trọng tâm trong ngày. Tác động tài chính/tiến độ đến dự án. Thẩm quyền rà soát.
 
-* TIÊU ĐỀ BƯỚC PLAN (Điểm nóng Miền Nam & Tiến độ CTCTĐT - Luật ĐT 143/2025/QH15): 
-  - Phân tích sự cộng hưởng của đầu tư công phía Nam đến các dự án BĐS. Nêu tên các khu vực/dự án đang được hưởng lợi hoặc sắp được duyệt CTCTĐT (theo Điều 24, 25 LĐT 143/2025).
-  - Thẩm quyền: UBND cấp tỉnh nào, Sở Tài chính địa phương nào đang đẩy nhanh thủ tục?
+* TIÊU ĐỀ BƯỚC PLAN (Điểm nóng Hạ tầng Miền Nam & Tiến độ CTCTĐT): 
+  - Trình bày 1-2 Case Study tại TP.HCM (lưu ý địa giới mới), Đồng Nai hoặc Long An. Đánh giá thực tế xin CTCTĐT theo Luật Đầu tư 143/2025/QH15. Nêu rõ thẩm quyền của UBND TP.HCM, Sở Tài chính...
 
-* TIÊU ĐỀ BƯỚC DO (Thực chiến DA ĐT THÍ ĐIỂM THEO NQ 171/2024/QH15): 
-  - Phân tích 1 Case Study/Tình huống có thật (hoặc giả định sát thực tế nhất ở miền Nam). 
-  - Cách tiếp cận quỹ đất, lập danh mục để HĐND tỉnh duyệt.
-  - Xử lý bài toán đền bù, thỏa thuận giá đất với dân. Nếu bế tắc thì làm gì?
-  - Thẩm quyền: HĐND, UBND, Sở Nông nghiệp và Môi trường xử lý ra sao.
+* TIÊU ĐỀ BƯỚC DO (Thực chiến DA ĐT thí điểm theo NQ 171/2024/QH15): 
+  - Phân tích 1 bài toán thực tế thỏa thuận đền bù quỹ đất. Điểm thuận lợi vs Vướng mắc. Quy trình xử lý cụ thể của các cơ quan (Sở Nông nghiệp và Môi trường, UBND...).
 
-* TIÊU ĐỀ BƯỚC ACT (Giải quyết Vướng mắc - IRAC Plan): 
-  - Chọn 1 vướng mắc đang tồn đọng (Giao đất, chuyển mục đích...). 
-  - Cấu trúc: Issue - Rule - Application - Conclusion (Conclusion phải là 1 Action Plan tham mưu từng bước cụ thể trình Ban Giám đốc).
+* TIÊU ĐỀ BƯỚC ACT (Xử lý Vướng mắc - IRAC Plan trình Ban Giám đốc): 
+  - Chọn 1 vướng mắc (Giao đất, chuyển mục đích...). Viết theo cấu trúc IRAC. Conclusion phải là Action Plan 3-4 gạch đầu dòng rõ ràng.
 
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ (LEVEL B1-B2) & UK IDIOM:
-  - Cung cấp 5-7 từ vựng B1/B2 chuyên dùng trong hợp đồng mua bán/thuê BĐS (Bảng: Từ vựng | IPA | Nghĩa tiếng Việt | Ví dụ).
-  - 1 thành ngữ tiếng Anh thông dụng trong kinh doanh.
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (LEVEL B1-B2) & UK IDIOM:
+  - 5 từ vựng B1/B2 thông dụng (Bảng: Từ vựng | IPA | Nghĩa | Ví dụ). 1 thành ngữ UK đàm phán hợp đồng.
 """
 
     try:
