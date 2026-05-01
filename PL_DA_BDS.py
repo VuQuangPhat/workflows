@@ -45,38 +45,32 @@ def get_ai_report(news_data):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
+    # PROMPT ĐƯỢC NÂNG CẤP: LINH ĐỘNG CẤU TRÚC, ÉP ĐƯA BẢNG TIẾN ĐỘ & NÚT THẮT
     prompt = f"""
 Bạn là Trợ lý Cố vấn Pháp lý BĐS chuyên nghiệp, làm việc dưới sự chỉ đạo của Chuyên viên pháp lý dự án Vũ Quang Phát.
-Nhiệm vụ: Lập báo cáo TỔNG HỢP, CẬP NHẬT CHÍNH SÁCH & THAM MƯU CHIẾN LƯỢC định kỳ. Báo cáo cần kết nối từ móng (Hệ thống pháp luật, chiến lược gom đất) đến ngọn (Lộ trình đủ điều kiện mở bán).
+Nhiệm vụ: Lập báo cáo TỔNG HỢP, CẬP NHẬT CHÍNH SÁCH & THAM MƯU CHIẾN LƯỢC định kỳ.
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
 BỘ QUY TẮC CỐT LÕI (TUÂN THỦ TUYỆT ĐỐI 100%):
-
-1. ĐỊA GIỚI & BỘ MÁY HÀNH CHÍNH (SAU 01/07/2025):
-   - NQ 202/2025: Bình Dương, Bà Rịa - Vũng Tàu đã sáp nhập vào TP.HCM. 
-   - CẤM TUYỆT ĐỐI dùng "UBND Quận", "Ủy ban nhân dân quận". Mọi thẩm quyền cấp cơ sở thuộc "UBND TP.HCM/Thành phố trực thuộc".
-   - BẮT BUỘC dùng tên cơ quan chuyên môn mới: "Sở Nông nghiệp và Môi trường" (Đất đai/Bồi thường), "Sở Tài chính" (Đầu tư/Giá đất), "Sở Xây dựng" (Quy hoạch/Điều kiện bán hàng).
-
-2. BẢN CHẤT NQ 171/2024/QH15 & CMĐSDĐ:
-   - Cơ chế NQ 171 CHỈ dùng để chuyển mục đích từ ĐẤT KHÁC (nông nghiệp, phi nông nghiệp) sang ĐẤT Ở làm dự án nhà ở thương mại. Tuyệt đối không phân tích chung cư cũ trong mục này.
-
-3. HIỆU LỰC VĂN BẢN ĐỒNG BỘ:
-   - Đánh giá phải dựa trên góc nhìn liên thông các Luật mới: Luật Đầu tư 143/2025/QH15, Luật Đất đai 31/2024/QH15, Luật Xây dựng 135/2025/QH15 và Luật KDBĐS 29/2023/QH15.
-
-4. TƯ DUY CỐ VẤN CHIẾN LƯỢC:
-   - Mọi lộ trình phân tích rủi ro thời gian và chi phí đều phải hướng tới vạch đích: Đủ điều kiện MỞ BÁN sản phẩm.
+1. ĐỊA GIỚI & BỘ MÁY (SAU 01/07/2025): NQ 202/2025 sáp nhập Bình Dương, BR-VT vào TP.HCM. Cấm dùng "UBND Quận". Bắt buộc dùng: "Sở Nông nghiệp và Môi trường" (Đất đai), "Sở Tài chính" (Giá đất), "Sở Xây dựng".
+2. BẢN CHẤT NQ 171: Chỉ dùng để chuyển mục đích từ ĐẤT KHÁC sang ĐẤT Ở. Tuyệt đối không phân tích chung cư cũ.
+3. LUẬT MỚI LIÊN THÔNG: Phân tích dựa trên sự đồng bộ của Luật Đầu tư 143, Luật Đất đai 31, Luật Xây dựng 135, Luật KDBĐS 29.
+4. NGOẠI NGỮ B1: Chỉ sử dụng các từ vựng tiếng Anh chuyên ngành ở mức độ B1 (Ví dụ: Deposit, Lease, Permit...) và 1 UK Idiom. KHÔNG dùng từ C1/C2 phức tạp.
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
-CẤU TRÚC BÁO CÁO (Markdown chuyên nghiệp):
-* [Dòng 1] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ BƯỚC 1: NHẬN DIỆN & ĐÁNH GIÁ TÁC ĐỘNG CHÍNH SÁCH - Tổng hợp tin tức nổi bật và đánh giá rủi ro thời gian, chi phí cho CĐT dưới lăng kính hiệu lực của các Luật mới.
-* TIÊU ĐỀ BƯỚC 2: VĨ MÔ - BỨC TRANH HẠ TẦNG & SỨC MUA MỞ BÁN - Tác động của tin tức và việc sáp nhập (NQ 202/2025) đến giá vốn, chi phí đền bù, và mức độ cạnh tranh của dự án.
-* TIÊU ĐỀ BƯỚC 3: VI MÔ - SO SÁNH NGÃ RẼ ĐẦU TƯ & NÚT THẮT QUY TRÌNH - Bảng phân tích các ngã rẽ lựa chọn (Đấu thầu/Đấu giá/CTCTĐT theo LĐT) so với cơ chế NQ 171. Chỉ rõ lộ trình đang có nguy cơ kẹt ở khâu nào tại Sở Nông nghiệp và Môi trường, Sở Tài chính trên đường đến đích Mở bán.
-* TIÊU ĐỀ BƯỚC 4: THỰC CHIẾN NQ 171 - QUẢN TRỊ RỦI RO "ĐẤT DA BÁO" - Các giải pháp cụ thể (đàm phán, vận dụng pháp luật dân sự, điều chỉnh quy hoạch) để gỡ vướng 100% diện tích và lấy "Sổ hồng tổng".
-* TIÊU ĐỀ BƯỚC 5: GIẢI PHÁP TÌNH HUỐNG IRAC (Action Plan) - Chọn 1 rủi ro cốt lõi từ tin tức hôm nay (Ưu tiên rủi ro biến động giá đất làm chậm nộp tiền SDĐ). Phân tích cấu trúc IRAC và đề xuất 3 bước hành động cụ thể cho Ban Giám Đốc.
-* TIÊU ĐỀ BƯỚC 6: TỪ VỰNG TIẾNG ANH PHÁP LÝ (B1) & UK IDIOM - 5 từ vựng chuyên ngành cơ bản mức độ B1 và 1 thành ngữ thương mại Anh Quốc để áp dụng trong công việc.
+YÊU CẦU CẤU TRÚC (LINH ĐỘNG VÀ THỰC CHIẾN):
+Bạn được TOÀN QUYỀN TỰ QUYẾT ĐỊNH việc chia các tiêu đề (Heading) sao cho logic, mạch lạc và phù hợp nhất với luồng thông tin nhận được. KHÔNG CẦN phải chia theo kiểu "Bước 1, Bước 2". 
+Tạo ra một báo cáo đọc tự nhiên như một chuyên gia đang trình bày. Tuy nhiên, TRONG BÁO CÁO BẮT BUỘC PHẢI CHỨA CÁC KHỐI NỘI DUNG SAU:
+
+- Khối 1: Đánh giá Tác động Chính sách & Vĩ mô từ tin tức (Giá vốn, chi phí đền bù, sức mua).
+- Khối 2 [QUAN TRỌNG NHẤT]: Bảng hoặc Sơ đồ phân tích LỘ TRÌNH, THẨM QUYỀN VÀ NÚT THẮT THỰC TẾ. Phân tích rõ các bước từ lúc gom đất, CTCTĐT đến khi Mở bán theo NQ 171. Chỉ đích danh quy trình đang hoặc sẽ bị kẹt ở khâu nào tại Sở Nông nghiệp và Môi trường (rà soát nguồn gốc) hay Sở Tài chính (định giá đất). Đề xuất ngay GIẢI PHÁP THỰC CHIẾN để gỡ nút thắt đó.
+- Khối 3: Quản trị rủi ro "Đất da báo" (nếu có thông tin liên quan đến gom đất).
+- Khối 4: Giải pháp tình huống IRAC cho một rủi ro cốt lõi nhất từ tin tức trong ngày.
+- Khối 5: 5 từ vựng B1 & 1 UK Idiom.
+
+Đầu báo cáo luôn bắt đầu bằng dòng: "Thời gian lập báo cáo: {current_time}"
 """
 
     try:
