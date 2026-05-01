@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Chuẩn hóa bộ máy sau 1/7/2025 & Nêu rõ thẩm quyền từng bước ISO"""
+    """Phân tích dữ liệu bằng AI: Ép khung tổ chức bộ máy mới & Thẩm quyền ISO"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -54,13 +54,18 @@ THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
 LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ MỆNH LỆNH 100%):
 1. VỀ LUẬT VÀ THUẬT NGỮ CHUYÊN MÔN: 
    - CHỈ ĐƯỢC PHÉP dùng cấu trúc của Luật Đầu tư 143/2025/QH15 (Điều 24: Dự án thuộc diện CTCTĐT; Điều 25: Thẩm quyền CTCTĐT).
-   - Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
+   - Áp dụng chuẩn xác: Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
    - Thuật ngữ chuẩn: "Chấp thuận chủ trương đầu tư" (CTCTĐT), "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất". Nghiêm cấm dùng từ "chấp thuận nhu cầu sử dụng đất".
-2. VỀ TÊN GỌI SỞ BAN NGÀNH SAU 1/7/2025:
-   - Hệ thống tổ chức các Sở, Ban, Ngành đã thay đổi toàn bộ từ 1/7/2025. Bắt buộc phải rà soát, kiểm chứng và sử dụng ĐÚNG danh xưng của các cơ quan có thẩm quyền MỚI NHẤT. Nếu dữ liệu báo chí dùng tên cũ, bạn phải tự động hiệu chỉnh lại cho đúng cơ cấu hiện hành.
+
+2. VỀ TÊN GỌI SỞ BAN NGÀNH (ÁP DỤNG QUY ĐỊNH MỚI TỪ SAU 01/07/2025):
+   - Hệ thống tổ chức cơ quan hành chính đã sáp nhập. BẮT BUỘC SỬ DỤNG BẢNG QUY ĐỔI SAU, tuyệt đối KHÔNG viết tên cũ:
+     + KHÔNG dùng "Sở Tài nguyên và Môi trường" -> Bắt buộc dùng "Sở Nông nghiệp và Môi trường" (cơ quan hiện phụ trách đất đai, bồi thường, môi trường).
+     + KHÔNG dùng "Sở Kế hoạch và Đầu tư" -> Bắt buộc dùng "Sở Tài chính" (đã hợp nhất, hiện phụ trách thẩm định CTCTĐT, đấu thầu, tài chính).
+     + KHÔNG dùng "Sở Quy hoạch - Kiến trúc" -> Bắt buộc dùng "Sở Xây dựng" (đã hợp nhất, phụ trách quy hoạch, xây dựng, kiến trúc).
+
 3. VỀ NGHỊ QUYẾT 171/2024/QH15 & THẨM QUYỀN TỪNG BƯỚC ISO:
-   - Trong mỗi bước phân tích (Plan - Do - Check - Act), BẮT BUỘC phải làm rõ: THẨM QUYỀN thuộc về ai? (Quốc hội, Thủ tướng, HĐND cấp tỉnh, UBND cấp tỉnh, hay các cơ quan chuyên môn tương ứng).
-   - Với NQ 171/2024/QH15: Phân tích sâu vướng mắc về thời điểm xin văn bản chấp thuận của UBND cấp tỉnh. Thẩm quyền quyết định danh mục là của HĐND, thẩm quyền ra Thông báo chấp thuận là của UBND. Trình tự thực hiện thế nào?
+   - Ở mỗi bước phân tích (Plan - Do - Check - Act), BẮT BUỘC phải trình bày 1 mục nhỏ có tên "Thẩm quyền thực hiện:" (Chỉ đích danh HĐND cấp tỉnh, UBND cấp tỉnh, hay Sở Nông nghiệp và Môi trường, Sở Tài chính, Sở Xây dựng).
+   - Chuyên đề NQ 171/2024/QH15: Phải phân tích rõ, thẩm định danh mục dự án thí điểm thuộc thẩm quyền HĐND, ban hành Thông báo chấp thuận thuộc UBND, và cơ quan tham mưu quỹ đất là Sở Nông nghiệp và Môi trường.
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
@@ -68,10 +73,23 @@ YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong sắc bén, thực ch
 
 CẤU TRÚC BÁO CÁO DỰ KIẾN:
 * [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): Tổng hợp tin tức. Chỉ rõ văn bản nào sắp ban hành, vừa có hiệu lực hoặc vừa bị bãi bỏ. Nêu rõ thẩm quyền rà soát, theo dõi của CĐT/Chuyên viên pháp lý ở bước này.
-* TIÊU ĐỀ BƯỚC PLAN (Hoạch định - Chuyên đề NQ 171/2024/QH15): Đưa ra góc nhìn sâu về thủ tục triển khai NQ 171. CHỈ RÕ THẨM QUYỀN của HĐND và UBND cấp tỉnh trong việc đưa dự án vào danh mục và ra văn bản chấp thuận. Nếu không có tin mới, lập Checklist phòng rủi ro cho CĐT khi thỏa thuận quỹ đất.
-* TIÊU ĐỀ BƯỚC DO (Thực thi - Cơ chế CTCTĐT hiện hành): Phân tích quy trình theo Điều 24 Luật Đầu tư 143/2025/QH15. CHỈ RÕ THẨM QUYỀN quyết định CTCTĐT theo Điều 25 Luật Đầu tư 143/2025/QH15 (Chỉ rõ dự án nào thuộc Quốc hội, Thủ tướng, UBND cấp tỉnh...).
-* TIÊU ĐỀ BƯỚC ACT (Đánh giá tình huống - IRAC): Xử lý 1 vướng mắc từ tin (Giao đất, chuyển mục đích, bồi thường...). Nêu rõ THẨM QUYỀN giải quyết tình huống này thuộc về cơ quan quản lý nhà nước nào (sử dụng tên gọi cơ quan mới nhất sau 1/7/2025).
+
+* TIÊU ĐỀ BƯỚC CHECK (Nhận diện & Cảnh báo pháp lý 24h): 
+  - Tổng hợp tin tức, cảnh báo hiệu lực văn bản.
+  - Thẩm quyền thực hiện: Nêu rõ ai/cơ quan nào chịu trách nhiệm rà soát (Ví dụ: Chuyên viên pháp lý tổng hợp trình Ban Giám đốc).
+
+* TIÊU ĐỀ BƯỚC PLAN (Hoạch định - Chuyên đề NQ 171/2024/QH15): 
+  - Phân tích sâu thủ tục thỏa thuận nhận QSDĐ. Nếu không có tin mới, lập Checklist phòng rủi ro cho CĐT.
+  - Thẩm quyền thực hiện: Nêu rõ vai trò của HĐND, UBND cấp tỉnh, và Sở Nông nghiệp và Môi trường.
+
+* TIÊU ĐỀ BƯỚC DO (Thực thi - Cơ chế CTCTĐT hiện hành): 
+  - Phân tích quy trình theo Điều 24, Điều 25 Luật Đầu tư 143/2025/QH15.
+  - Thẩm quyền thực hiện: Quốc hội, Thủ tướng, UBND cấp tỉnh, và Sở Tài chính (làm cơ quan đầu mối tiếp nhận hồ sơ).
+
+* TIÊU ĐỀ BƯỚC ACT (Đánh giá tình huống - IRAC): 
+  - Xử lý 1 vướng mắc (Giao đất, chuyển mục đích...). 
+  - Thẩm quyền thực hiện: Sử dụng đúng tên Sở ban ngành mới (Sở Nông nghiệp và Môi trường, Sở Xây dựng...).
+
 * TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ & UK IDIOM: Bảng từ vựng và 1 câu thành ngữ.
 """
 
