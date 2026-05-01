@@ -3,6 +3,8 @@ import re
 import smtplib
 import feedparser
 import markdown
+import pytz
+from datetime import datetime
 import google.generativeai as genai
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -10,13 +12,12 @@ from email.mime.multipart import MIMEMultipart
 def get_real_estate_news():
     """Thu thập tin tức chuyên sâu về Pháp lý, Chính sách và Bất động sản"""
     sources = {
-        "Chính sách (Báo Chính phủ)": "https://baochinhphu.vn/rss/phap-luat.rss",
-        "Tin tức (Thư viện Pháp luật)": "https://thuvienphapluat.vn/rss/tin-tuc.rss",
+        "Chính phủ": "https://baochinhphu.vn/rss/phap-luat.rss",
+        "Thư viện Pháp luật": "https://thuvienphapluat.vn/rss/tin-tuc.rss",
         "Pháp luật (PLO)": "https://plo.vn/rss/phap-luat.rss",
         "Bất động sản (PLO)": "https://plo.vn/rss/bat-dong-san.rss",
         "BĐS (VnExpress)": "https://vnexpress.net/rss/bat-dong-san.rss",
-        "Pháp luật (VnExpress)": "https://vnexpress.net/rss/phap-luat.rss",
-        "BĐS (CafeF)": "https://cafef.vn/bat-dong-san.rss"
+        "Kinh tế (Tuổi Trẻ)": "https://tuoitre.vn/rss/kinh-doanh.rss"
     }
     
     summary = ""
@@ -24,60 +25,56 @@ def get_real_estate_news():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
-            
             for entry in feed.entries[:4]:
                 desc = entry.get('summary', entry.get('description', ''))
                 clean_desc = re.sub('<[^<]+>', '', desc) 
-                
                 short_desc = (clean_desc[:350] + '...') if len(clean_desc) > 350 else clean_desc
                 summary += f"Tiêu đề: {entry.title}\nTóm tắt: {short_desc}\nLink: {entry.link}\n\n"
         except Exception as e:
             print(f"Lỗi khi tải nguồn {cat}: {e}")
             continue
-            
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI bám sát quy trình chuẩn và NQ 171/2024/QH15"""
+    """Phân tích dữ liệu bằng AI với tư duy pháp lý hiện hành và quy trình ISO linh hoạt"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
     genai.configure(api_key=api_key)
     
+    # Lấy thời gian thực để đưa vào prompt
+    tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
+    current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
+    
     prompt = f"""
-Bạn là Trợ lý AI chuyên môn cao hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ của bạn là đọc tin tức hôm nay và soạn thảo báo cáo cập nhật chuyên sâu, tuân thủ tư duy kiểm soát rủi ro pháp lý chuẩn.
+Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
+Nhiệm vụ của bạn là lập báo cáo phân tích chuyên sâu từ dữ liệu tin tức, tuân thủ nghiêm ngặt quy trình PDCA (Plan - Do - Check - Act).
 
-LƯU Ý CỐT LÕI VỀ VĂN BẢN PHÁP LUẬT: 
-- Tuyệt đối không viện dẫn các văn bản đã hết hiệu lực hoặc bị nhầm lẫn ký hiệu cơ quan ban hành.
-- ĐẶC BIỆT CHÚ Ý: Chuyên đề cốt lõi hiện tại là "Nghị quyết số 171/2024/QH15 của Quốc hội về thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất hoặc đang có quyền sử dụng đất". Tuyệt đối KHÔNG nhầm lẫn thành NQ 171/NQ-CP của Chính phủ.
+THỜI GIAN LẬP BÁO CÁO HIỆN TẠI: {current_time}
+
+LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ 100%):
+1. CẬP NHẬT LUẬT HIỆN HÀNH: Hệ thống pháp luật đang thay đổi. Bạn BẮT BUỘC phải dùng và trích dẫn các văn bản pháp luật MỚI NHẤT sau đây trong mọi phân tích:
+   - Luật Đầu tư 143/2025/QH15 (Tuyệt đối KHÔNG nhắc đến Luật Đầu tư 2020 hay 61/2020/QH14).
+   - Luật Xây dựng 135/2025/QH15.
+   - Luật Kinh doanh Bất động sản 29/2023/QH15.
+   - Luật Đất đai 31/2024/QH15.
+   - Nghị quyết số 171/2024/QH15 của Quốc hội (Tuyệt đối KHÔNG viết nhầm thành NQ-CP).
+2. THUẬT NGỮ CHUYÊN MÔN: 
+   - Sử dụng đúng cụm từ "Chấp thuận chủ trương đầu tư" (viết tắt CTCTĐT), "Chấp thuận nhà đầu tư", "Giao đất, cho thuê đất, cho phép chuyển mục đích sử dụng đất".
+   - Nghiêm cấm sử dụng các thuật ngữ tự chế, sai chuyên môn như "chấp thuận nhu cầu sử dụng đất".
 
 Dữ liệu thô từ báo chí hôm nay: {news_data}
 
-HÃY SOẠN: "BÁO CÁO PHÁP LÝ BẤT ĐỘNG SẢN & DỰ ÁN".
-Yêu cầu: Markdown, KHÔNG EMOJI. Ngôn ngữ chính: TIẾNG VIỆT. Văn phong chuẩn mực, logic pháp lý chặt chẽ.
+YÊU CẦU TRÌNH BÀY: Markdown, KHÔNG EMOJI. Văn phong chuẩn mực, logic sắc bén.
+KHÔNG sử dụng đánh số cứng (1, 2, 3...) cho các tiêu đề chính. Tùy biến tên tiêu đề sao cho phù hợp với nội dung phân tích hôm nay, nhưng phải đảm bảo đi qua đủ 4 bước quy trình sau:
 
-CẤU TRÚC BẮT BUỘC:
-## 1. TỔNG HỢP & CẢNH BÁO HIỆU LỰC CHÍNH SÁCH 24H QUA (CHECK)
-- Tóm tắt các sự kiện, chính sách BĐS đáng chú ý. 
-- Cảnh báo hiệu lực: Chỉ rõ văn bản pháp luật nào sắp ban hành, vừa có hiệu lực (ví dụ Luật Đầu tư 143/2025/QH15), hoặc vừa hết hiệu lực.
-
-## 2. CHUYÊN ĐỀ MỤC TIÊU: NGHỊ QUYẾT 171/2024/QH15 & NGHỊ ĐỊNH HƯỚNG DẪN (PLAN)
-- Lọc mọi tin tức liên quan đến việc triển khai Nghị quyết 171/2024/QH15 và các thủ tục đi kèm.
-- Đánh giá tiến độ tháo gỡ điểm nghẽn thủ tục tại các địa phương (ví dụ: các Thông báo chấp thuận cho tổ chức thực hiện dự án thí điểm của UBND cấp tỉnh).
-- LƯU Ý: Nếu hôm nay không có tin tức mới, hãy tự động thiết lập một Check-list quy trình rủi ro thực chiến hoặc lời khuyên pháp lý cho Chủ đầu tư khi thực hiện thỏa thuận nhận quyền sử dụng đất theo cơ chế thí điểm của Nghị quyết 171/2024/QH15.
-
-## 3. CƠ CHẾ PHÁP LÝ CHUNG VỀ CHẤP THUẬN CHỦ TRƯƠNG ĐẦU TƯ (DO)
-- Phân tích bình luận chuyên sâu về quy trình, thủ tục dự án dựa trên khung pháp luật hiện hành (Luật Đất đai 2024, Luật Đầu tư 2025).
-
-## 4. PHÂN TÍCH TÌNH HUỐNG THỰC TIỄN (IRAC METHOD - ACT)
-- Trích xuất một tình huống thực tiễn từ tin tức (ưu tiên vướng mắc bồi thường, giao đất, chuyển mục đích sử dụng đất) và giải quyết theo cấu trúc IRAC (Issue - Rule - Application - Conclusion).
-
-## 5. TỪ VỰNG TIẾNG ANH PHÁP LÝ BĐS (UK B2)
-- Trình bày bảng (Từ vựng | IPA | Nghĩa tiếng Việt | Ví dụ áp dụng).
-
-## 6. UK IDIOM OF THE DAY (LEVEL B2)
-- Một thành ngữ Anh (UK) dùng trong đàm phán thương mại.
+CẤU TRÚC BÁO CÁO DỰ KIẾN:
+* [Bắt buộc ở dòng đầu tiên] "Thời gian lập báo cáo: {current_time}"
+* TIÊU ĐỀ 1 (Tương ứng bước CHECK - Nhận diện & Cảnh báo): Tổng hợp tin tức 24h qua. Phải có phần Cảnh báo hiệu lực văn bản (chỉ rõ văn bản nào sắp ban hành, vừa có hiệu lực, hoặc vừa bị bãi bỏ).
+* TIÊU ĐỀ 2 (Tương ứng bước PLAN - Chuyên đề NQ 171/2024/QH15): Phân tích tiến độ tháo gỡ điểm nghẽn hoặc tin tức về NQ 171/2024/QH15. Nếu không có tin mới, hãy tự thiết lập một Check-list quy trình rủi ro thực chiến cho Chủ đầu tư khi thỏa thuận nhận QSDĐ theo Nghị quyết này.
+* TIÊU ĐỀ 3 (Tương ứng bước DO - Cơ chế CTCTĐT): Phân tích quy trình, thủ tục CTCTĐT dựa trên khung Luật Đầu tư 143/2025/QH15 và Luật Đất đai 31/2024/QH15. 
+* TIÊU ĐỀ 4 (Tương ứng bước ACT - Thực chiến tình huống theo IRAC): Trích xuất 1 vướng mắc từ tin tức hoặc giả định tình huống thực tế và phân tích theo: Issue - Rule (Áp dụng đúng luật mới nêu trên) - Application - Conclusion.
+* TIÊU ĐỀ 5: TỪ VỰNG TIẾNG ANH PHÁP LÝ BĐS & UK IDIOM (LEVEL B2): Bảng từ vựng và 1 câu thành ngữ đàm phán thương mại.
 """
 
     try:
@@ -96,7 +93,6 @@ CẤU TRÚC BẮT BUỘC:
         return f"System Error: {str(e)}"
 
 def send_email(markdown_content):
-    """Gửi email với định dạng CSS chuẩn pháp lý"""
     sender = "phat.clover@gmail.com"
     pwd = os.environ.get('GMAIL_PASSWORD')
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
@@ -112,34 +108,15 @@ def send_email(markdown_content):
     <html>
       <head>
         <style>
-            body {{ 
-                font-family: 'Times New Roman', serif; 
-                background-color: #f4f7f6; 
-                padding: 30px; 
-                line-height: 1.8; 
-                color: #1a1a1a;
-            }}
-            .container {{ 
-                max-width: 850px; 
-                margin: 0 auto; 
-                background: #fff; 
-                padding: 50px; 
-                border-top: 10px solid #8b0000; 
-                box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            }}
+            body {{ font-family: 'Times New Roman', serif; background-color: #f4f7f6; padding: 30px; line-height: 1.8; color: #1a1a1a; }}
+            .container {{ max-width: 850px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #8b0000; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }}
             h1 {{ color: #8b0000; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
             h2 {{ color: #8b0000; border-bottom: 2px solid #8b0000; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
-            
-            p, li {{ 
-                text-align: justify; 
-                text-justify: inter-word; 
-                margin-bottom: 15px; 
-                font-size: 16px; 
-            }}
-            
+            p, li {{ text-align: justify; text-justify: inter-word; margin-bottom: 15px; font-size: 16px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             table, th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
             th {{ background-color: #f8f9fa; color: #8b0000; }}
+            .time-stamp {{ text-align: right; font-style: italic; color: #555; margin-bottom: 30px; font-weight: bold; }}
             .footer {{ text-align: center; font-size: 11px; color: #888; margin-top: 50px; border-top: 1px solid #eee; padding-top: 15px; }}
         </style>
       </head>
