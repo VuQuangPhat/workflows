@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Case study độc lập, phân tích sâu, không vẽ vời hình thức"""
+    """Phân tích dữ liệu bằng AI: Tầm nhìn Cố vấn Vĩ mô & Vi mô, bóc tách điểm nghẽn quy trình"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -46,37 +46,40 @@ def get_ai_report(news_data):
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
     prompt = f"""
-Bạn là Trợ lý AI cấp cao chuyên về Pháp lý Bất động sản, hỗ trợ trực tiếp cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ: Lập báo cáo THỰC CHIẾN, ĐỘC LẬP VÀ SẮC BÉN, tuân thủ ISO (PDCA), bám sát pháp lý và địa lý mới nhất.
+Bạn là Chuyên gia Cố vấn Pháp lý Bất động sản vĩ mô và vi mô, tham mưu chiến lược cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
+Nhiệm vụ: Lập báo cáo phân tích SẮC BÉN, ĐỘC LẬP, từ bức tranh VĨ MÔ đến điểm nghẽn VI MÔ trong quy trình ISO (PDCA).
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
-LƯU Ý CỐT LÕI (BẮT BUỘC TUÂN THỦ 100%):
-1. GÓC ĐỘ PHÂN TÍCH (CASE STUDY ĐỘC LẬP):
-   - Phân tích các dự án trên báo như những Case Study khách quan của thị trường. TUYỆT ĐỐI KHÔNG giả định công ty của Phát là chủ đầu tư của các dự án đó (Không viết "CĐT chúng ta", "Công ty của Phát").
-   - TRỰC DIỆN VÀO CHUYÊN MÔN: Tuyệt đối KHÔNG viết định dạng thư tín nội bộ. KHÔNG dùng các từ "TO: Ban Giám đốc", "FROM:", "DATE:", "SUBJECT:". Hãy đi thẳng vào lập luận pháp lý.
+BỘ QUY TẮC CỐT LÕI (BẮT BUỘC TUÂN THỦ 100%):
 
-2. CƠ CẤU TỔ CHỨC & ĐỊA GIỚI (SAU 01/07/2025):
-   - Toàn bộ Bình Dương và Bà Rịa - Vũng Tàu đã thuộc TP.HCM. Thẩm quyền cấp tỉnh cao nhất nay là UBND TP.HCM. (Ví dụ: "TP. Thủ Dầu Một, TP.HCM"). Đồng Nai và Long An vẫn là tỉnh độc lập.
-   - Gọi tên cơ quan đúng chức năng mới: "Sở Nông nghiệp và Môi trường" (Đất đai, bồi thường); "Sở Tài chính" (Đầu tư, CTCTĐT); "Sở Xây dựng" (Quy hoạch, cấp phép).
+1. TƯ DUY CỐ VẤN VĨ MÔ & VI MÔ:
+   - Vĩ mô: Đánh giá bức tranh toàn cảnh (luật pháp mới, hạ tầng, sự lúng túng của bộ máy quản lý nhà nước) đang tạo ra rào cản hệ thống nào.
+   - Vi mô (Quy trình): Khi phân tích thủ tục, phải chỉ rõ điểm nghẽn nằm ở khâu nào. (Ví dụ: Luật Đất đai 31/2024 cho phép, nhưng quy trình thực tế lại đang tắc ở khâu Sở Tài chính thẩm định giá, hoặc tắc ở Sở Nông nghiệp và Môi trường khi rà soát nguồn gốc đất). Đề xuất giải pháp khơi thông.
 
-3. CHIỀU SÂU CHIẾN LƯỢC: 
-   - Trả lại sự sắc bén trong phân tích: Chỉ rõ rủi ro, điểm nghẽn, thời gian và giải pháp. 
-   - Phân tích sâu Điều 24, 25 Luật Đầu tư 143/2025/QH15.
-   - NQ 171/2024/QH15: Tập trung vào bài toán CĐT bên thứ 3 đi gom đất, vướng quy hoạch/đất da báo thì xử lý sao. 
-   - Luật Xây dựng 135/2025/QH15; Luật KDBĐS 29/2023/QH15; Luật Đất đai 31/2024/QH15.
+2. MÔ HÌNH CHÍNH QUYỀN ĐÔ THỊ (KHÔNG CÒN UBND QUẬN):
+   - CẤM TUYỆT ĐỐI dùng "UBND quận". Mọi thẩm quyền cấp cơ sở đô thị thuộc "UBND cấp Thành phố trực thuộc" (như TP. Thủ Đức, TP. Thủ Dầu Một) hoặc UBND TP.HCM.
 
-4. TIẾNG ANH CHUYÊN NGÀNH: CHỈ dùng từ vựng B1 - B2, thông dụng (Tenant, Landlord, Deposit, Contract, Permit...).
+3. ĐỊA GIỚI HÀNH CHÍNH & TÊN CƠ QUAN CHUYÊN MÔN (SAU 01/07/2025):
+   - Bình Dương và Bà Rịa - Vũng Tàu đã sáp nhập vào TP.HCM. (Đồng Nai, Long An là tỉnh độc lập).
+   - Chỉ sử dụng tên Sở mới: "Sở Nông nghiệp và Môi trường", "Sở Tài chính", "Sở Xây dựng".
 
-Dữ liệu thô từ báo chí: {news_data}
+4. BẢN CHẤT NGHỊ QUYẾT 171/2024/QH15:
+   - TUYỆT ĐỐI KHÔNG lấy ví dụ cải tạo chung cư cũ. 
+   - CHỈ dùng Case Study đi gom quỹ "đất nông nghiệp" hoặc "đất cơ sở sản xuất kinh doanh" vùng ven để làm khu đô thị mới.
+
+5. HÌNH THỨC & VĂN PHONG:
+   - Góc nhìn chuyên gia độc lập. Không nhận vơ dự án. Không dùng định dạng thư tín (TO, FROM).
+
+Dữ liệu thô từ báo chí hôm nay: {news_data}
 
 CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt theo tin tức):
 * [Dòng 1] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ BƯỚC CHECK (Cảnh báo Pháp lý 24h): Tin tức trọng tâm. Thẩm quyền rà soát thuộc về ai.
-* TIÊU ĐỀ BƯỚC PLAN (Điểm nóng Hạ tầng & Tiến độ CTCTĐT): Lấy 1-2 Case Study từ tin tức tại TP.HCM (gồm cả BD, BR-VT cũ), Đồng Nai, Long An. Đánh giá thực tế xin CTCTĐT theo Luật Đầu tư 143/2025. Thẩm quyền của UBND và Sở Tài chính.
-* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171/2024/QH15 - Bài toán thỏa thuận quỹ đất): Phân tích 1 Case Study thực tế. Điểm thuận lợi vs Vướng mắc (đất da báo, giá đền bù). Cơ quan gỡ rối: Sở Nông nghiệp và Môi trường.
-* TIÊU ĐỀ BƯỚC ACT (IRAC - Giải quyết vướng mắc thực tiễn): Đi thẳng vào Cấu trúc: Issue (Vấn đề) - Rule (Luật áp dụng) - Application (Phân tích) - Conclusion (Action plan tham mưu chiến lược, các bước thực hiện). KHÔNG làm form thư tín nội bộ.
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng (Bảng) & 1 thành ngữ.
+* TIÊU ĐỀ BƯỚC CHECK (Vĩ mô - Nhận diện Điểm nghẽn hệ thống 24h): Đánh giá bức tranh pháp lý, hạ tầng từ tin tức. Rủi ro hệ thống và cơ hội tổng quan.
+* TIÊU ĐỀ BƯỚC PLAN (Vi mô - Nút thắt thủ tục CTCTĐT & Hạ tầng): Case Study dự án ăn theo hạ tầng tại phía Nam. Phân tích tiến độ xin CTCTĐT (Điều 24, 25 Luật Đầu tư 143/2025). Chỉ đích danh điểm nghẽn quy trình nằm ở cơ quan nào (Sở Tài chính hay UBND).
+* TIÊU ĐỀ BƯỚC DO (Vĩ mô & Vi mô - Thực chiến NQ 171/2024/QH15): Case Study gom quỹ đất phi nông nghiệp/nông nghiệp. Vĩ mô: NQ 171 tháo gỡ cơ chế gì? Vi mô: Điểm nghẽn thực tế khi đàm phán với dân hoặc khi Sở Nông nghiệp và Môi trường thẩm định chuyển mục đích. Giải pháp gỡ rối.
+* TIÊU ĐỀ BƯỚC ACT (Giải pháp Cố vấn - IRAC Plan): Chọn 1 vướng mắc cốt lõi. Phân tích IRAC. Conclusion là Action Plan gỡ rối quy trình cụ thể cho CĐT.
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng pháp lý B1-B2 (Bảng) & 1 thành ngữ kinh doanh.
 """
 
     try:
@@ -102,12 +105,16 @@ CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt
             "Sở Kế hoạch Đầu tư": "Sở Tài chính",
             "Sở Quy hoạch - Kiến trúc": "Sở Xây dựng",
             "Sở Quy hoạch và Kiến trúc": "Sở Xây dựng",
-            "Sở QH-KT": "Sở Xây dựng"
+            "Sở QH-KT": "Sở Xây dựng",
+            "UBND quận": "UBND cấp Thành phố trực thuộc",
+            "Ủy ban nhân dân quận": "Ủy ban nhân dân cấp Thành phố trực thuộc",
+            "UBND Quận": "UBND cấp Thành phố trực thuộc"
         }
         
         cleaned_report = raw_report
         for old_term, new_term in replacements.items():
-            cleaned_report = cleaned_report.replace(old_term, new_term)
+            pattern = re.compile(re.escape(old_term), re.IGNORECASE)
+            cleaned_report = pattern.sub(new_term, cleaned_report)
             
         return cleaned_report
         
@@ -131,22 +138,22 @@ def send_email(markdown_content):
       <head>
         <style>
             body {{ font-family: 'Times New Roman', serif; background-color: #f4f7f6; padding: 30px; line-height: 1.8; color: #1a1a1a; }}
-            .container {{ max-width: 850px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #8b0000; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }}
-            h1 {{ color: #8b0000; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
-            h2 {{ color: #8b0000; border-bottom: 2px solid #8b0000; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
-            h3 {{ color: #002b5e; font-size: 17px; margin-top: 20px; }}
+            .container {{ max-width: 850px; margin: 0 auto; background: #fff; padding: 50px; border-top: 10px solid #004d40; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }}
+            h1 {{ color: #004d40; text-align: center; text-transform: uppercase; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 20px; }}
+            h2 {{ color: #004d40; border-bottom: 2px solid #004d40; padding-bottom: 5px; margin-top: 40px; font-size: 19px; text-transform: uppercase; }}
+            h3 {{ color: #bf360c; font-size: 17px; margin-top: 20px; }}
             p, li {{ text-align: justify; text-justify: inter-word; margin-bottom: 15px; font-size: 16px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             table, th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
-            th {{ background-color: #f8f9fa; color: #8b0000; }}
+            th {{ background-color: #e0f2f1; color: #004d40; }}
             .time-stamp {{ text-align: right; font-style: italic; color: #555; margin-bottom: 30px; font-weight: bold; }}
             .footer {{ text-align: center; font-size: 11px; color: #888; margin-top: 50px; border-top: 1px solid #eee; padding-top: 15px; }}
         </style>
       </head>
       <body>
         <div class="container">
-            <h1>BÁO CÁO PHÁP LÝ BẤT ĐỘNG SẢN & DỰ ÁN</h1>
-            <p style="text-align: center;">Kính gửi Chuyên viên pháp lý: <b>Vũ Quang Phát</b></p>
+            <h1>BÁO CÁO CỐ VẤN PHÁP LÝ DỰ ÁN BẤT ĐỘNG SẢN</h1>
+            <p style="text-align: center;">Tham mưu chuyên môn: <b>Vũ Quang Phát</b></p>
             <div class="content">{html_body}</div>
             <div class="footer">Hệ thống phân tích tự động | Gemini AI & GitHub Actions</div>
         </div>
