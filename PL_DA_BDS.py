@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Phân tích dữ liệu bằng AI: Tầm nhìn Cố vấn Vĩ mô & Vi mô, bóc tách điểm nghẽn quy trình"""
+    """Phân tích bằng AI: Lộ trình từ CTCTĐT đến Mở bán (Sales Eligibility)"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -46,40 +46,36 @@ def get_ai_report(news_data):
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
     prompt = f"""
-Bạn là Chuyên gia Cố vấn Pháp lý Bất động sản vĩ mô và vi mô, tham mưu chiến lược cho Chuyên viên pháp lý dự án BĐS: Vũ Quang Phát.
-Nhiệm vụ: Lập báo cáo phân tích SẮC BÉN, ĐỘC LẬP, từ bức tranh VĨ MÔ đến điểm nghẽn VI MÔ trong quy trình ISO (PDCA).
+Bạn là Chuyên gia Cố vấn Pháp lý BĐS chiến lược, tham mưu cho Chuyên viên pháp lý dự án Vũ Quang Phát.
+Nhiệm vụ: Lập báo cáo CHIẾN LƯỢC xuyên suốt từ CTCTĐT đến khâu ĐỦ ĐIỀU KIỆN MỞ BÁN.
 
 THỜI GIAN LẬP BÁO CÁO: {current_time}
 
-BỘ QUY TẮC CỐT LÕI (BẮT BUỘC TUÂN THỦ 100%):
+BỘ QUY TẮC CỐT LÕI (TUÂN THỦ 100%):
 
-1. TƯ DUY CỐ VẤN VĨ MÔ & VI MÔ:
-   - Vĩ mô: Đánh giá bức tranh toàn cảnh (luật pháp mới, hạ tầng, sự lúng túng của bộ máy quản lý nhà nước) đang tạo ra rào cản hệ thống nào.
-   - Vi mô (Quy trình): Khi phân tích thủ tục, phải chỉ rõ điểm nghẽn nằm ở khâu nào. (Ví dụ: Luật Đất đai 31/2024 cho phép, nhưng quy trình thực tế lại đang tắc ở khâu Sở Tài chính thẩm định giá, hoặc tắc ở Sở Nông nghiệp và Môi trường khi rà soát nguồn gốc đất). Đề xuất giải pháp khơi thông.
+1. LỘ TRÌNH VỀ ĐÍCH (MỞ BÁN DỰ ÁN):
+   - Không chỉ dừng ở CTCTĐT. Phải phân tích các nhịp tiếp theo: 
+     + Nhịp 1 (Đất đai): Quyết định giao đất/cho thuê đất -> Thẩm định giá đất (Sở Tài chính) -> Hoàn thành nghĩa vụ tài chính -> Cấp GCN QSDĐ dự án[cite: 1].
+     + Nhịp 2 (Xây dựng): Phê duyệt quy hoạch 1/500 -> Thiết kế cơ sở/Kỹ thuật -> Giấy phép xây dựng (Sở Xây dựng).
+     + Nhịp 3 (Bán hàng): Hoàn thành phần móng (đối với chung cư) hoặc hạ tầng kỹ thuật (đối với đất nền) -> Văn bản thông báo đủ điều kiện bán của Sở Xây dựng -> Bảo lãnh ngân hàng.
 
-2. MÔ HÌNH CHÍNH QUYỀN ĐÔ THỊ (KHÔNG CÒN UBND QUẬN):
-   - CẤM TUYỆT ĐỐI dùng "UBND quận". Mọi thẩm quyền cấp cơ sở đô thị thuộc "UBND cấp Thành phố trực thuộc" (như TP. Thủ Đức, TP. Thủ Dầu Một) hoặc UBND TP.HCM.
+2. TƯ DUY NQ 171/2024/QH15 & CMĐSDĐ:
+   - Bản chất: CMĐ từ đất nông nghiệp/phi nông nghiệp sang ĐẤT Ở. 
+   - Điểm nghẽn bán hàng: Dự án thí điểm NQ 171 phải hoàn thành CMĐSDĐ và nộp tiền sử dụng đất mới được phép kinh doanh. Phân tích rủi ro trượt giá đất làm ảnh hưởng đến giá bán dự kiến.
 
-3. ĐỊA GIỚI HÀNH CHÍNH & TÊN CƠ QUAN CHUYÊN MÔN (SAU 01/07/2025):
-   - Bình Dương và Bà Rịa - Vũng Tàu đã sáp nhập vào TP.HCM. (Đồng Nai, Long An là tỉnh độc lập).
-   - Chỉ sử dụng tên Sở mới: "Sở Nông nghiệp và Môi trường", "Sở Tài chính", "Sở Xây dựng".
+3. CHUẨN HÓA BỘ MÁY (SAU 01/07/2025):
+   - TUYỆT ĐỐI KHÔNG DÙNG: "UBND quận", "Tỉnh Bình Dương", "Tỉnh Bà Rịa - Vũng Tàu"[cite: 3, 5].
+   - THẨM QUYỀN MỚI: UBND TP.HCM/Thành phố trực thuộc; Sở Nông nghiệp và Môi trường (Đất đai); Sở Tài chính (Đầu tư/Giá đất); Sở Xây dựng (Quy hoạch/Bán hàng)[cite: 5].
 
-4. BẢN CHẤT NGHỊ QUYẾT 171/2024/QH15:
-   - TUYỆT ĐỐI KHÔNG lấy ví dụ cải tạo chung cư cũ. 
-   - CHỈ dùng Case Study đi gom quỹ "đất nông nghiệp" hoặc "đất cơ sở sản xuất kinh doanh" vùng ven để làm khu đô thị mới.
+Dữ liệu thô từ báo chí: {news_data}
 
-5. HÌNH THỨC & VĂN PHONG:
-   - Góc nhìn chuyên gia độc lập. Không nhận vơ dự án. Không dùng định dạng thư tín (TO, FROM).
-
-Dữ liệu thô từ báo chí hôm nay: {news_data}
-
-CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt theo tin tức):
+CẤU TRÚC BÁO CÁO (Markdown, Sắc bén, Tham mưu vĩ mô & vi mô):
 * [Dòng 1] "Thời gian lập báo cáo: {current_time}"
-* TIÊU ĐỀ BƯỚC CHECK (Vĩ mô - Nhận diện Điểm nghẽn hệ thống 24h): Đánh giá bức tranh pháp lý, hạ tầng từ tin tức. Rủi ro hệ thống và cơ hội tổng quan.
-* TIÊU ĐỀ BƯỚC PLAN (Vi mô - Nút thắt thủ tục CTCTĐT & Hạ tầng): Case Study dự án ăn theo hạ tầng tại phía Nam. Phân tích tiến độ xin CTCTĐT (Điều 24, 25 Luật Đầu tư 143/2025). Chỉ đích danh điểm nghẽn quy trình nằm ở cơ quan nào (Sở Tài chính hay UBND).
-* TIÊU ĐỀ BƯỚC DO (Vĩ mô & Vi mô - Thực chiến NQ 171/2024/QH15): Case Study gom quỹ đất phi nông nghiệp/nông nghiệp. Vĩ mô: NQ 171 tháo gỡ cơ chế gì? Vi mô: Điểm nghẽn thực tế khi đàm phán với dân hoặc khi Sở Nông nghiệp và Môi trường thẩm định chuyển mục đích. Giải pháp gỡ rối.
-* TIÊU ĐỀ BƯỚC ACT (Giải pháp Cố vấn - IRAC Plan): Chọn 1 vướng mắc cốt lõi. Phân tích IRAC. Conclusion là Action Plan gỡ rối quy trình cụ thể cho CĐT.
-* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng pháp lý B1-B2 (Bảng) & 1 thành ngữ kinh doanh.
+* TIÊU ĐỀ BƯỚC CHECK (Vĩ mô - Nhận diện tác động chính sách đến lộ trình mở bán): Đánh giá tin tức ảnh hưởng thế nào đến "đầu ra" của dự án (sức mua, lãi suất, thủ tục xác định giá đất).
+* TIÊU ĐỀ BƯỚC PLAN (Vi mô - Nút thắt quy trình ISO từ CTCTĐT đến Giấy phép xây dựng): Case Study hạ tầng miền Nam. Chỉ rõ điểm nghẽn kẹt tại khâu nào của Sở Tài chính (định giá) hay Sở Xây dựng (thẩm định thiết kế).
+* TIÊU ĐỀ BƯỚC DO (Thực chiến NQ 171/2024/QH15 - Chiến thuật "về đích" cho dự án gom đất): Cách xử lý vướng mắc CMĐSDĐ để sớm có "Sổ hồng dự án" làm điều kiện mở bán. Giải pháp đối phó với tình trạng giá đất biến động hậu sáp nhập TP.HCM.
+* TIÊU ĐỀ BƯỚC ACT (IRAC Plan - Điều kiện Mở bán dự án): Chọn 1 vướng mắc (Ví dụ: Chưa nộp xong tiền sử dụng đất nhưng muốn ký Hợp đồng đặt cọc). Phân tích rủi ro theo Luật KDBĐS 2023 và Action Plan cho CĐT.
+* TIÊU ĐỀ BƯỚC 5: TỪ VỰNG TIẾNG ANH (B1-B2) & UK IDIOM: 5 từ vựng về điều kiện bán hàng & 1 thành ngữ.
 """
 
     try:
@@ -96,19 +92,16 @@ CẤU TRÚC BÁO CÁO DỰ KIẾN (Markdown, Tùy biến tiêu đề linh hoạt
             except:
                 continue
                 
-        # --- BỘ LỌC CƯỠNG CHẾ BẰNG PYTHON ---
+        # --- BỘ LỌC CƯỠNG CHẾ BẰNG PYTHON (Triệt để lỗi thời) ---
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
             "Sở KH&ĐT": "Sở Tài chính",
-            "Sở Kế hoạch Đầu tư": "Sở Tài chính",
-            "Sở Quy hoạch - Kiến trúc": "Sở Xây dựng",
-            "Sở Quy hoạch và Kiến trúc": "Sở Xây dựng",
-            "Sở QH-KT": "Sở Xây dựng",
-            "UBND quận": "UBND cấp Thành phố trực thuộc",
-            "Ủy ban nhân dân quận": "Ủy ban nhân dân cấp Thành phố trực thuộc",
-            "UBND Quận": "UBND cấp Thành phố trực thuộc"
+            "UBND quận": "UBND cấp Thành phố trực thuộc/UBND TP.HCM",
+            "Ủy ban nhân dân quận": "UBND TP.HCM/Thành phố trực thuộc",
+            "tỉnh Bình Dương": "TP.HCM",
+            "tỉnh Bà Rịa": "TP.HCM"
         }
         
         cleaned_report = raw_report
@@ -127,7 +120,7 @@ def send_email(markdown_content):
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CẬP NHẬT DỰ ÁN #{run_num}"
+    msg["Subject"] = f"[PHÁP LÝ BĐS] BÁO CÁO CHIẾN LƯỢC MỞ BÁN #{run_num}"
     msg["From"] = f"Real Estate Legal AI <{sender}>"
     msg["To"] = sender
     
