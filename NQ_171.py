@@ -53,32 +53,13 @@ def get_ai_report(news_data):
     """
 
     try:
-        # Cấu hình công cụ Search
-        tools = [{"google_search_retrieval": {}}]
-        
-        # Lấy danh sách model và ưu tiên Flash nhưng chuẩn bị sẵn Pro để dự phòng
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
-        
-        report_content = "AI Generation Failed."
-        
-        for model_name in models_to_try:
-            try:
-                if "1.0" in model_name: continue 
-                
-                print(f"[*] Đang thử chạy model với Search: {model_name}...")
-                
-                # Khởi tạo model kèm Tool Search
-                model = genai.GenerativeModel(model_name=model_name, tools=tools)
-                response = model.generate_content(prompt)
-                
-                if response.text:
-                    report_content = response.text
-                    print(f"[+] Model {model_name} phản hồi thành công!")
-                    break
-            except Exception as e:
-                print(f"[-] Model {model_name} lỗi hoặc không hỗ trợ Search trên Free Tier: {str(e)}")
-                continue
+    # THÊM Ở ĐÂY: Thêm tham số tools vào bước khởi tạo model
+    model = genai.GenerativeModel(
+        model_name='gemini-1.5-flash',
+        tools=[{"google_search_retrieval": {}}] 
+    )
+    response = model.generate_content(prompt)
+    report = response.text
                 
         # Firewall thuật ngữ cưỡng chế (Đảm bảo gọi đúng tên Sở hậu sáp nhập)[cite: 1]
         replacements = {
