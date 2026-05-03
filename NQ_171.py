@@ -66,13 +66,22 @@ def get_ai_report(news_data):
     """
 
     try:
-        # Tự động chọn Model cao cấp nhất
-        models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        best_model = next((m for m in models if "pro" in m), models[0])
+        # Lựa chọn model thông minh, ưu tiên Flash để có tốc độ và độ ổn định cao
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
         
-        model = genai.GenerativeModel(best_model)
-        response = model.generate_content(prompt)
-        report = response.text
+        raw_report = "AI Generation Failed."
+        for model_name in models_to_try:
+            try:
+                # Bỏ qua các phiên bản 1.0 cũ
+                if "1.0" in model_name: continue 
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                raw_report = response.text
+                break
+            except Exception as e:
+                print(f"Lỗi khi thử model {model_name}: {e}")
+                continue
                 
         # Firewall Python: Chuẩn hóa thuật ngữ hành chính TP.HCM 2025
         replacements = {
