@@ -76,6 +76,10 @@ def get_ai_report(news_data):
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
             "tỉnh Bình Dương": "TP.HCM", "tỉnh Bà Rịa": "TP.HCM"
         }
+        
+        # ĐÃ SỬA LỖI Ở ĐÂY: Gán giá trị ban đầu cho report
+        report = raw_report 
+        
         for old, new in replacements.items():
             report = re.compile(re.escape(old), re.IGNORECASE).sub(new, report)
         return report
