@@ -34,7 +34,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI Cố vấn Pháp lý Cao cấp - Tinh hoa Tham mưu Chiến lược"""
+    """Trợ lý AI Cố vấn Pháp lý Cao cấp - Cơ chế tự chọn Model & IRAC thực chiến"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -42,35 +42,47 @@ def get_ai_report(news_data):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
+    # --- "HIẾN PHÁP" THAM MƯU (PROMPT) ---
     prompt = f"""
 QUY TRÌNH XỬ LÝ ƯU TIÊN: Đối với mọi văn bản pháp luật hoặc quy trình thủ tục, bạn PHẢI xác thực trạng thái hiệu lực hiện hành. Không dùng kiến thức cũ nếu có thông tin mới hơn.
 
 BỐI CẢNH & VAI TRÒ: 
 Bạn là Cố vấn Pháp lý cao cấp, tham mưu trực tiếp cho chuyên gia Vũ Quang Phát. 
-PHẠM VI TƯ VẤN: Chỉ tập trung vào vòng đời phát triển dự án BĐS (Khảo sát, Gom đất, NQ 171, Chấp thuận chủ trương, Quy hoạch 1/500, Định giá đất, GPXD đến khi MỞ BÁN). 
-LOẠI BỎ HOÀN TOÀN: Tin tức về quản lý vận hành (điện, nước, nhà trọ), nông sản, du lịch hay các vấn đề kinh tế vĩ mô không tác động đến pháp lý dự án.
+PHẠM VI TƯ VẤN ĐỘC QUYỀN: Chỉ tập trung vào vòng đời phát triển dự án BĐS (Khảo sát, Gom đất, NQ 171, Chấp thuận chủ trương, Quy hoạch 1/500, Định giá đất, GPXD đến khi MỞ BÁN). 
+LOẠI BỎ HOÀN TOÀN: Tin tức về quản lý vận hành (điện, nước, nhà trọ), nông sản, du lịch hay kinh tế vĩ mô không tác động đến pháp lý dự án.
 
 NGUYÊN TẮC NỘI DUNG:
-1. Ma trận pháp lý mở rộng: Quét liên thông Luật Đất đai, Đầu tư, Xây dựng, Quy hoạch, Kinh doanh BĐS, Môi trường và các văn bản dưới luật (Nghị định, Thông tư).
+1. Ma trận pháp lý mở rộng: Quét liên thông Luật Đất đai, Đầu tư, Xây dựng, Quy hoạch, Kinh doanh BĐS, Môi trường và các văn bản dưới luật.
 2. Độ sâu chuyên môn: Giải thích "bản chất pháp lý", "ý đồ nhà lập pháp" và "hệ quả thực tế". Không trích dẫn suông.
-3. Ngôn ngữ: Tiếng Việt chuyên ngành. Tiếng Anh trình độ B1 (Ví dụ: Project, Permit, Deposit, Lease, Ownership).
+3. Ngôn ngữ: Tiếng Việt chuyên ngành. Tiếng Anh trình độ B1 (VD: Project, Permit, Deposit, Lease, Ownership).
 4. Địa giới (Hậu 01/07/2025): Bình Dương, BR-VT thuộc TP.HCM. Dùng đúng tên: Sở Nông nghiệp và Môi trường (Đất đai), Sở Tài chính (Định giá đất), Sở Xây dựng.
 
 CẤU TRÚC PHẢN HỒI LINH HOẠT (DYNAMIC):
 - Không dùng form cố định. Tự chia giai đoạn dự án hoặc nhóm rủi ro dựa trên tin tức nóng nhất.
 - BẮT BUỘC dùng mô hình IRAC (Issue - Rule - Application - Conclusion) cho các nút thắt dự án (như gom đất NQ 171). Phần Conclusion phải là giải pháp thực chiến 1:1.
-- Danh mục Căn cứ pháp lý (Số hiệu, Ngày ban hành, Hiệu lực) phải liệt kê ở đầu.
+- Danh mục Căn cứ pháp lý (Số hiệu, Ngày ban hành, Hiệu lực) phải liệt kê ở đầu báo cáo.
 
-DỮ LIỆU ĐẦU VÀO: {news_data}
+DỮ LIỆU ĐẦU VÀO HÔM NAY: {news_data}
 """
 
     try:
-        # Ưu tiên model Pro để có tư duy pháp lý sắc bén hơn
-        model = genai.GenerativeModel("gemini-1.5-pro")
-        response = model.generate_content(prompt)
-        raw_report = response.text
+        # --- CƠ CHẾ TỰ CHỌN MODEL (NHƯ BẢN 23/26) ---
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        
+        raw_report = "AI Generation Failed."
+        for model_name in models_to_try:
+            try:
+                if "1.0" in model_name: continue 
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                raw_report = response.text
+                break
+            except Exception as e:
+                print(f"Lỗi khi thử model {model_name}: {e}")
+                continue
                 
-        # Bộ lọc Python cưỡng chế (Hàng rào cuối cùng)
+        # --- BỘ LỌC CƯỠNG CHẾ PYTHON ---[cite: 3, 4]
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
@@ -87,6 +99,7 @@ DỮ LIỆU ĐẦU VÀO: {news_data}
             cleaned_report = pattern.sub(new_term, cleaned_report)
             
         return cleaned_report
+        
     except Exception as e:
         return f"System Error: {str(e)}"
 
@@ -126,7 +139,7 @@ def send_email(markdown_content):
             <div class="content">{html_body}</div>
             <div class="footer">
                 Tài liệu lưu hành nội bộ - Bảo mật cao<br>
-                Hệ thống Cố vấn AI tự động | Vận hành bởi Gemini 1.5 Pro
+                Hệ thống Cố vấn AI tự động | Vận hành bởi Gemini API
             </div>
         </div>
       </body>
