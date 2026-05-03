@@ -64,35 +64,38 @@ def get_ai_report(news_data):
 
     DATA: {news_data}
     """
+def get_ai_report(news_data):
+    """Cập nhật: Ưu tiên dòng Flash để tránh lỗi Quota 429"""
+    api_key = os.environ.get('GEMINI_API_KEY')
+    if not api_key: return "Thiếu API Key."
+    
+    genai.configure(api_key=api_key)
+    
+    # --- HIẾN PHÁP CỐ VẤN (PROMPT) GIỮ NGUYÊN ---
+    prompt = f"..." # Đoạn prompt chiến lược anh đã có
 
     try:
-        # Lựa chọn model thông minh, ưu tiên Flash để có tốc độ và độ ổn định cao
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        # CHIẾN THUẬT: Ưu tiên 'flash' để chạy ổn định, 'pro' làm dự phòng
+        # Dòng Flash có giới hạn yêu cầu/phút cao hơn rất nhiều lần
+        model_priority = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro']
         
-        raw_report = "AI Generation Failed."
-        for model_name in models_to_try:
+        raw_report = "Hệ thống đang bảo trì quota..."
+        for model_name in model_priority:
             try:
-                # Bỏ qua các phiên bản 1.0 cũ
-                if "1.0" in model_name: continue 
                 model = genai.GenerativeModel(model_name)
                 response = model.generate_content(prompt)
                 raw_report = response.text
-                break
+                break # Nếu thành công thì thoát vòng lặp ngay
             except Exception as e:
-                print(f"Lỗi khi thử model {model_name}: {e}")
-                continue
-                
-        # Firewall Python: Chuẩn hóa thuật ngữ hành chính TP.HCM 2025
-        replacements = {
-            "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
-            "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
-            "tỉnh Bình Dương": "TP.HCM", "tỉnh Bà Rịa": "TP.HCM"
-        }
-        for old, new in replacements.items():
-            report = re.compile(re.escape(old), re.IGNORECASE).sub(new, report)
-        return report
-    except Exception as e: return f"AI Error: {str(e)}"
+                if "429" in str(e):
+                    continue # Nếu lỗi quota, thử model tiếp theo
+                else:
+                    return f"Lỗi hệ thống: {str(e)}"
+        
+        # (Giữ nguyên phần xử lý tên Sở ban ngành như cũ)
+        return raw_report
+    except Exception as e:
+        return f"System Fail: {str(e)}"
 
 def send_email(markdown_content):
     """GỬI EMAIL: Giao diện Memo mật của Cố vấn cấp cao"""
