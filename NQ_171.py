@@ -35,22 +35,21 @@ def get_ai_report(news_data):
     prompt = f"""
     CONTEXT: Today is {current_time}. You are the Senior Legal Advisor to expert Vũ Quang Phát.
     ROLE: A high-level legal peer, not a student or a robot. 
-    CORE FOCUS: NQ 171/2024/QH15 (Pilot mechanism for land assembly in housing projects).
+    LANGUAGE: Vietnamese (TOÀN BỘ BÁO CÁO PHẢI VIẾT BẰNG TIẾNG VIỆT CHUYÊN NGÀNH PHÁP LÝ TẠI VIỆT NAM).
+    CORE FOCUS: NQ 171/2024/QH15 (Cơ chế thí điểm thực hiện dự án nhà ở thương mại thông qua thỏa thuận về nhận quyền sử dụng đất).
     
     STRICT GUIDELINES:
     1. NO META-TALK: Do NOT mention "I have filtered news", "Based on your rules", or "I checked the laws". Jump straight into the strategy.
-    2. NO DICTIONARY: Use professional terms (Project, Ownership, Sales, Holding cost) naturally. Do NOT explain them.
+    2. NO DICTIONARY: Use professional terms (Dự án, Sở hữu, Mở bán, Chi phí vốn, Giải phóng mặt bằng) naturally. Do NOT explain them.
     3. LEGAL ACCURACY: 
-       - Land Law 2024, Housing Law 2023, RE Business Law 2023: All effective from 01/08/2024 (Standard for 21 months).
-       - NQ 171/2024/QH15: The primary tool for Land Acquisition.
+       - Xử lý hiệu lực pháp lý: KHÔNG mặc định mọi thứ đều có hiệu lực từ 01/08/2024. Phải phân tích dựa trên ngày có hiệu lực thực tế và ĐIỀU KHOẢN CHUYỂN TIẾP của từng văn bản (Luật Đất đai 2024, Luật Nhà ở 2023, Luật Kinh doanh BĐS 2023, và các Nghị định) áp dụng cho bối cảnh thực tế.
+       - NQ 171/2024/QH15: Áp dụng sắc bén cơ chế thí điểm để giải quyết bài toán quỹ đất.
     
     REPORT STRUCTURE:
-    - EXECUTIVE SUMMARY: Identify the most critical project risk/opportunity from news.
-    - STRATEGIC ANALYSIS (IRAC): 
-        + Issue: Locate the bottleneck in the Project lifecycle (Survey to Sales).
-        + Rule & Reality: Interlink NQ 171 with Land Law 2024 and Decree 102/2024.
-        + Application: Analyze the impact on cost and timeline at HCMC departments (Sở Nông nghiệp và Môi trường, Sở Tài chính).
-    - 1:1 ACTION PLAN: Precise steps for Vũ Quang Phát to execute (e.g., specific negotiation points, land-split tactics).
+    - EXECUTIVE SUMMARY: Tóm tắt nhanh cục diện và tác động lớn nhất từ các tin tức mới nhất.
+    - THUẬN LỢI TỪ NQ 171 & LUẬT MỚI: Chỉ ra các điểm gỡ vướng, lợi thế về thời gian, chi phí, cơ chế gom đất, thỏa thuận nhận chuyển nhượng quyền sử dụng đất.
+    - KHÓ KHĂN & ĐIỂM NGHẼN: Phân tích rủi ro trong quá trình áp dụng, điểm nghẽn thủ tục hành chính, đặc biệt lưu ý tác động tại các Sở ban ngành TP.HCM (Sở Nông nghiệp và Môi trường, Sở Tài chính).
+    - 1:1 ACTION PLAN: Các bước thực thi chính xác và chiến thuật cụ thể dành cho Vũ Quang Phát (ví dụ: điểm cốt lõi khi đàm phán, chiến thuật tách thửa, gom đất).
     
     INPUT DATA: {news_data}
     """
@@ -77,26 +76,28 @@ def get_ai_report(news_data):
             "tỉnh Bình Dương": "TP.HCM", "tỉnh Bà Rịa": "TP.HCM"
         }
         
-        # ĐÃ SỬA LỖI Ở ĐÂY: Gán giá trị ban đầu cho report
+        # Gán biến report để tránh lỗi "referenced before assignment"
         report = raw_report 
         
         for old, new in replacements.items():
             report = re.compile(re.escape(old), re.IGNORECASE).sub(new, report)
         return report
-    except Exception as e: return f"Error: {str(e)}"
+    except Exception as e: return f"Lỗi hệ thống AI: {str(e)}"
 
 def send_email(markdown_content):
     """Email Executive Style: Tinh gọn và Quyền lực"""
     sender = "phat.clover@gmail.com"
     msg = MIMEMultipart()
-    msg["Subject"] = f"[TOP PRIORITY] LEGAL STRATEGY REPORT #{datetime.now().strftime('%d%m')}"
+    
+    # Cập nhật Tiêu đề Email
+    msg["Subject"] = f"[TOP PRIORITY] THUẬN LỢI VÀ KHÓ KHĂN NQ 171 - #{datetime.now().strftime('%d%m')}"
     msg["From"] = f"Senior Advisor <{sender}>"
     msg["To"] = sender
     
     html_body = markdown.markdown(markdown_content, extensions=['extra', 'tables'])
     full_html = f"""
     <div style="font-family: 'Times New Roman', serif; max-width: 850px; margin: auto; border-top: 8px solid #002D62; padding: 40px; color: #1a1a1a;">
-        <h1 style="color: #002D62; text-align: center;">MEMO: CHIẾN LƯỢC DỰ ÁN BĐS</h1>
+        <h1 style="color: #002D62; text-align: center;">BÁO CÁO: THUẬN LỢI VÀ KHÓ KHĂN NQ 171</h1>
         <p style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 20px;">Strictly Confidential | For: Vũ Quang Phát</p>
         <div style="line-height: 1.8; text-align: justify;">{html_body}</div>
         <div style="margin-top: 50px; text-align: center; font-size: 11px; color: #888;">AI Strategic Advisor System | Gemini Pro Core</div>
