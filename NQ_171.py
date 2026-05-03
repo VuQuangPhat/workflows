@@ -24,6 +24,7 @@ def get_real_estate_news():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
+            # Lấy tin trong vòng 48h để đảm bảo tính tức thời
             for entry in feed.entries[:8]: 
                 desc = entry.get('summary', entry.get('description', ''))
                 clean_desc = re.sub('<[^<]+>', '', desc) 
@@ -34,7 +35,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI Cố vấn Pháp lý Cao cấp - Cơ chế tự chọn Model & IRAC thực chiến"""
+    """Trợ lý AI Cố vấn Pháp lý Cao cấp - Mastermind Edition"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -42,33 +43,34 @@ def get_ai_report(news_data):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
-    # --- "HIẾN PHÁP" THAM MƯU (PROMPT) ---
+    # --- "HIẾN PHÁP" THAM MƯU CHO CHUYÊN GIA VŨ QUANG PHÁT ---
     prompt = f"""
-QUY TRÌNH XỬ LÝ ƯU TIÊN: Đối với mọi văn bản pháp luật hoặc quy trình thủ tục, bạn PHẢI xác thực trạng thái hiệu lực hiện hành. Không dùng kiến thức cũ nếu có thông tin mới hơn.
+QUY TRÌNH XỬ LÝ ƯU TIÊN: Bạn PHẢI xác thực trạng thái hiệu lực hiện hành của văn bản. 
+LƯU Ý ĐẶC BIỆT: Luật Đất đai 2024, Luật Nhà ở 2023, Luật Kinh doanh BĐS 2023 đều đã có hiệu lực từ ngày 01/08/2024.
 
-BỐI CẢNH & VAI TRÒ: 
+1. Vai trò và Bản sắc:
 Bạn là Cố vấn Pháp lý cao cấp, tham mưu trực tiếp cho chuyên gia Vũ Quang Phát. 
-PHẠM VI TƯ VẤN ĐỘC QUYỀN: Chỉ tập trung vào vòng đời phát triển dự án BĐS (Khảo sát, Gom đất, NQ 171, Chấp thuận chủ trương, Quy hoạch 1/500, Định giá đất, GPXD đến khi MỞ BÁN). 
-LOẠI BỎ HOÀN TOÀN: Tin tức về quản lý vận hành (điện, nước, nhà trọ), nông sản, du lịch hay kinh tế vĩ mô không tác động đến pháp lý dự án.
+PHẠM VI TƯ VẤN ĐỘC QUYỀN: Vòng đời dự án đầu tư BĐS (Khảo sát, Gom đất, NQ 171, Chủ trương đầu tư, 1/500, Định giá đất, GPXD đến khi MỞ BÁN).
+LOẠI BỎ HOÀN TOÀN: Tin tức quản lý vận hành (nhà trọ, điện nước), nông sản, du lịch. Chỉ giữ lại tin tác động đến CHI PHÍ, TIẾN ĐỘ và RỦI RO pháp lý dự án.
 
-NGUYÊN TẮC NỘI DUNG:
-1. Ma trận pháp lý mở rộng: Quét liên thông Luật Đất đai, Đầu tư, Xây dựng, Quy hoạch, Kinh doanh BĐS, Môi trường và các văn bản dưới luật.
-2. Độ sâu chuyên môn: Giải thích "bản chất pháp lý", "ý đồ nhà lập pháp" và "hệ quả thực tế". Không trích dẫn suông.
-3. Ngôn ngữ: Tiếng Việt chuyên ngành. Tiếng Anh trình độ B1 (VD: Project, Permit, Deposit, Lease, Ownership).
-4. Địa giới (Hậu 01/07/2025): Bình Dương, BR-VT thuộc TP.HCM. Dùng đúng tên: Sở Nông nghiệp và Môi trường (Đất đai), Sở Tài chính (Định giá đất), Sở Xây dựng.
+2. Nguyên tắc nội dung:
+- Ma trận liên thông: Lấy NQ 171 làm lõi nhưng PHẢI liên kết với Luật Đất đai, Đầu tư, Xây dựng, Quy hoạch để tìm hướng mở.
+- Độ sâu chuyên môn: Giải thích "bản chất pháp lý", "ý đồ nhà lập pháp" và "hệ quả thực tế". Không trích dẫn suông.
+- Ngôn ngữ: Tiếng Việt chuyên ngành. Tiếng Anh trình độ B1 (Project, Permit, Deposit, Lease, Ownership, Sales, Cash Flow).
+- Địa giới (Hậu 01/07/2025): Bình Dương, BR-VT thuộc TP.HCM. Dùng đúng tên: Sở Nông nghiệp và Môi trường (Đất đai), Sở Tài chính (Định giá đất), Sở Xây dựng (Quy hoạch/Mở bán).
 
-CẤU TRÚC PHẢN HỒI LINH HOẠT (DYNAMIC):
-- Không dùng form cố định. Tự chia giai đoạn dự án hoặc nhóm rủi ro dựa trên tin tức nóng nhất.
-- BẮT BUỘC dùng mô hình IRAC (Issue - Rule - Application - Conclusion) cho các nút thắt dự án (như gom đất NQ 171). Phần Conclusion phải là giải pháp thực chiến 1:1.
-- Danh mục Căn cứ pháp lý (Số hiệu, Ngày ban hành, Hiệu lực) phải liệt kê ở đầu báo cáo.
+3. Cấu trúc phản hồi linh hoạt (Dynamic Structure):
+- Không dùng form cố định. Tự chia vấn đề trọng tâm dựa trên tin tức nóng nhất.
+- BẮT BUỘC dùng mô hình IRAC (Issue - Rule - Application - Conclusion) cho các nút thắt dự án. Phần Conclusion phải là chiến thuật tháo gỡ 1:1, thực chiến.
+- Danh mục Căn cứ pháp lý (Số hiệu, Ngày ban hành, Hiệu lực) phải liệt kê rõ ràng ở đầu báo cáo.
 
 DỮ LIỆU ĐẦU VÀO HÔM NAY: {news_data}
 """
 
     try:
-        # --- CƠ CHẾ TỰ CHỌN MODEL (NHƯ BẢN 23/26) ---
+        # Cơ chế tự chọn model khả dụng để tránh lỗi 404
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'pro' in x else (1 if 'flash' in x else 2)))
         
         raw_report = "AI Generation Failed."
         for model_name in models_to_try:
@@ -79,10 +81,9 @@ DỮ LIỆU ĐẦU VÀO HÔM NAY: {news_data}
                 raw_report = response.text
                 break
             except Exception as e:
-                print(f"Lỗi khi thử model {model_name}: {e}")
                 continue
                 
-        # --- BỘ LỌC CƯỠNG CHẾ PYTHON ---[cite: 3, 4]
+        # Bộ lọc Python cưỡng chế tên cơ quan và địa giới
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
@@ -99,18 +100,17 @@ DỮ LIỆU ĐẦU VÀO HÔM NAY: {news_data}
             cleaned_report = pattern.sub(new_term, cleaned_report)
             
         return cleaned_report
-        
     except Exception as e:
         return f"System Error: {str(e)}"
 
 def send_email(markdown_content):
-    """Gửi Email với giao diện sang trọng, chuyên nghiệp"""
+    """Gửi Email với giao diện Báo cáo Tham mưu Cao cấp"""
     sender = "phat.clover@gmail.com"
     pwd = os.environ.get('GMAIL_PASSWORD')
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[CỐ VẤN PHÁP LÝ] CHIẾN LƯỢC DỰ ÁN & MỞ BÁN #{run_num}"
+    msg["Subject"] = f"[CỐ VẤN CHIẾN LƯỢC] BÁO CÁO DỰ ÁN & MỞ BÁN #{run_num}"
     msg["From"] = f"Senior Legal Advisor <{sender}>"
     msg["To"] = sender
     
@@ -120,22 +120,22 @@ def send_email(markdown_content):
     <html>
       <head>
         <style>
-            body {{ font-family: 'Times New Roman', Times, serif; background-color: #f2f4f7; padding: 20px; line-height: 1.8; color: #1c1e21; }}
-            .container {{ max-width: 950px; margin: 0 auto; background: #ffffff; padding: 50px; border-top: 12px solid #002d5e; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 4px; }}
-            h1 {{ color: #002d5e; text-align: center; font-size: 26px; border-bottom: 2px solid #eee; padding-bottom: 20px; text-transform: uppercase; }}
-            h2 {{ color: #0056b3; border-left: 6px solid #002d5e; padding-left: 15px; margin-top: 40px; font-size: 20px; background: #f8f9fa; padding-top: 5px; padding-bottom: 5px; }}
-            h3 {{ color: #a91e2c; font-size: 18px; margin-top: 25px; font-weight: bold; }}
+            body {{ font-family: 'Times New Roman', Times, serif; background-color: #f4f7f9; padding: 25px; line-height: 1.8; color: #1a1a1a; }}
+            .container {{ max-width: 900px; margin: 0 auto; background: #ffffff; padding: 50px; border-top: 12px solid #1a5276; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-radius: 4px; }}
+            h1 {{ color: #1a5276; text-align: center; font-size: 26px; border-bottom: 2px solid #eee; padding-bottom: 20px; text-transform: uppercase; }}
+            h2 {{ color: #1a5276; border-left: 6px solid #1a5276; padding-left: 15px; margin-top: 40px; font-size: 20px; background: #f9f9f9; padding-top: 5px; padding-bottom: 5px; }}
+            h3 {{ color: #c0392b; font-size: 18px; margin-top: 25px; font-weight: bold; }}
             p, li {{ text-align: justify; margin-bottom: 12px; font-size: 16px; }}
             table {{ width: 100%; border-collapse: collapse; margin: 25px 0; }}
             table, th, td {{ border: 1px solid #dee2e6; padding: 15px; text-align: left; }}
-            th {{ background-color: #e9ecef; color: #002d5e; font-weight: bold; text-transform: uppercase; font-size: 14px; }}
-            .footer {{ text-align: center; font-size: 12px; color: #6c757d; margin-top: 60px; border-top: 1px solid #eee; padding-top: 20px; }}
+            th {{ background-color: #ecf0f1; color: #1a5276; font-weight: bold; text-transform: uppercase; }}
+            .footer {{ text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 60px; border-top: 1px solid #eee; padding-top: 20px; }}
         </style>
       </head>
       <body>
         <div class="container">
-            <h1>THÔNG TIN THAM MƯU PHÁP LÝ DỰ ÁN BĐS</h1>
-            <p style="text-align: center;">Thực hiện riêng cho: <strong>Vũ Quang Phát</strong></p>
+            <h1>THÔNG TIN THAM MƯU CHIẾN LƯỢC DỰ ÁN BĐS</h1>
+            <p style="text-align: center;">Thực hiện riêng cho chuyên gia: <strong>Vũ Quang Phát</strong></p>
             <div class="content">{html_body}</div>
             <div class="footer">
                 Tài liệu lưu hành nội bộ - Bảo mật cao<br>
@@ -151,7 +151,7 @@ def send_email(markdown_content):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print("Đã gửi báo cáo tham mưu cao cấp thành công!")
+        print("Đã gửi báo cáo chiến lược cao cấp thành công!")
     except Exception as e:
         print(f"Lỗi gửi mail: {e}")
 
