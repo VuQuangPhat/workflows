@@ -37,13 +37,13 @@ def get_ai_report(news_data):
 
     NHIỆM VỤ TRA CỨU (GOOGLE SEARCH):
     1. Xác thực tên các đơn vị hành chính hậu sáp nhập tại TP.HCM năm 2026 (VD: Sở Nông nghiệp và Môi trường, Sở Tài chính).
-    2. Check hiệu lực thực tế của các Nghị định/Thông tư hướng dẫn Luật Đất đai 2024 mới nhất. KHÔNG gán cứng mốc 01/08/2024.
+    2. Check hiệu lực thực tế của các Nghị định/Thông tư hướng dẫn Luật Đất đai 2024 mới nhất.
     3. Tìm điểm nóng NQ 171/2024/QH15 tại TP.HCM trong 24h qua.
 
     BÁO CÁO THEO MÔ HÌNH IRAC:
-    - [I] ISSUE: Điểm nóng thị trường. Ảnh hưởng thế nào đến DA ĐT theo NQ 171 (Thỏa thuận nhận quyền SDĐ)?
+    - [I] ISSUE: Điểm nóng thị trường. Ảnh hưởng thế nào đến DA ĐT theo NQ 171.
     - [R] RULE & REALITY: Dẫn luật chính xác + Phân tích "Ý đồ nhà lập pháp" & "Hệ quả thực tế".
-    - [A] APPLICATION: Quy trình tại các Sở hậu sáp nhập. So sánh với quy trình đấu giá "bình thường".
+    - [A] APPLICATION: Quy trình tại các Sở hậu sáp nhập (Sở Nông nghiệp và Môi trường, Sở Tài chính).
     - [C] CONCLUSION: Action Plan 1:1 cho Vũ Quang Phát.
     
     - GLOSSARY: 05 từ vựng pháp lý B1 (English - Vietnamese).
@@ -51,27 +51,39 @@ def get_ai_report(news_data):
     INPUT DATA: {news_data}
     """
 
-    # Biến lưu trữ kết quả cuối cùng
     final_report = "AI Generation Failed."
 
     try:
-        # THỬ LẦN 1: Chạy có Google Search (Đã sửa thụt đầu dòng)
-        try:
-            print("[*] Đang thử chạy Gemini 1.5 Flash với Google Search...")
-            model = genai.GenerativeModel(
-                model_name='gemini-1.5-flash',
-                tools=[{"google_search_retrieval": {}}] 
-            )
-            response = model.generate_content(prompt)
-            final_report = response.text
-        except Exception as search_error:
-            # THỬ LẦN 2: Nếu Search lỗi, chạy chế độ thường để đảm bảo luôn có báo cáo
-            print(f"[!] Lỗi Search ({search_error}). Đang chuyển sang chế độ thường...")
-            model = genai.GenerativeModel(model_name='gemini-1.5-flash')
-            response = model.generate_content(prompt)
-            final_report = response.text + "\n\n*(Lưu ý: Báo cáo không dùng Search do giới hạn bản Free)*"
+        # Lấy danh sách model có hỗ trợ tạo nội dung
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        # Ưu tiên Flash để tối ưu tốc độ và quota trên Free Tier
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'flash' in x else (1 if 'pro' in x else 2)))
+        
+        for model_name in models_to_try:
+            if "1.0" in model_name: continue
+            
+            try:
+                print(f"[*] Đang thử {model_name} với Google Search...")
+                # THÊM GOOGLE SEARCH Ở ĐÂY
+                model = genai.GenerativeModel(
+                    model_name=model_name,
+                    tools=[{"google_search_retrieval": {}}]
+                )
+                response = model.generate_content(prompt)
+                final_report = response.text
+                break # Nếu thành công thì thoát vòng lặp
+            except Exception as e:
+                print(f"[!] Model {model_name} lỗi Search ({e}). Thử chạy chế độ thường...")
+                try:
+                    # FALLBACK: Chạy lại chính model đó nhưng không dùng tools
+                    model = genai.GenerativeModel(model_name=model_name)
+                    response = model.generate_content(prompt)
+                    final_report = response.text + "\n\n*(Lưu ý: Báo cáo dựa trên dữ liệu RSS, không dùng Search do giới hạn API)*"
+                    break
+                except:
+                    continue
 
-        # Firewall thuật ngữ cưỡng chế (Dùng final_report đã thống nhất tên biến)
+        # Firewall thuật ngữ cưỡng chế TP.HCM hậu sáp nhập
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính"
@@ -80,9 +92,9 @@ def get_ai_report(news_data):
             final_report = re.compile(re.escape(old), re.IGNORECASE).sub(new, final_report)
             
         return final_report
-        
+
     except Exception as e: 
-        return f"Lỗi hệ thống nghiêm trọng: {str(e)}"
+        return f"Lỗi hệ thống: {str(e)}"
 
 def send_email(markdown_content):
     """Email Executive Style: Tinh gọn và Quyền lực"""
