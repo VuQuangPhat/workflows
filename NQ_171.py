@@ -56,13 +56,19 @@ def get_ai_report(news_data):
     """
 
     try:
-        # Tự động quét chọn model cao cấp nhất sẵn có
-        models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        best_model = next((m for m in models if "pro" in m), models[0])
+        # Cơ chế quét chọn model tự động để tránh lỗi 404
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        models_to_try = sorted(available_models, key=lambda x: (0 if 'pro' in x else (1 if 'flash' in x else 2)))
         
-        model = genai.GenerativeModel(best_model)
-        response = model.generate_content(prompt)
-        report = response.text
+        raw_report = "AI Generation Failed."
+        for model_name in models_to_try:
+            try:
+                if "1.0" in model_name: continue 
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(prompt)
+                raw_report = response.text
+                break
+            except: continue
                 
         # Firewall Python cưỡng chế thuật ngữ hành chính hậu 2025
         replacements = {
