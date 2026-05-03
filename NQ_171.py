@@ -31,7 +31,6 @@ def get_ai_report(news_data):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M - %d/%m/%Y")
     
-    # --- MASTER PROMPT V6 (CỰC SÁT THỰC TẾ) ---
     prompt = f"""
     CONTEXT: Today is {current_time}. Bạn là Senior Legal Advisor cho chuyên gia Vũ Quang Phát.
     MỤC TIÊU: Sử dụng GOOGLE SEARCH để báo cáo về điểm nóng pháp lý BĐS.
@@ -52,26 +51,38 @@ def get_ai_report(news_data):
     INPUT DATA: {news_data}
     """
 
+    # Biến lưu trữ kết quả cuối cùng
+    final_report = "AI Generation Failed."
+
     try:
-    # THÊM Ở ĐÂY: Thêm tham số tools vào bước khởi tạo model
-    model = genai.GenerativeModel(
-        model_name='gemini-1.5-flash',
-        tools=[{"google_search_retrieval": {}}] 
-    )
-    response = model.generate_content(prompt)
-    report = response.text
-                
-        # Firewall thuật ngữ cưỡng chế (Đảm bảo gọi đúng tên Sở hậu sáp nhập)[cite: 1]
+        # THỬ LẦN 1: Chạy có Google Search (Đã sửa thụt đầu dòng)
+        try:
+            print("[*] Đang thử chạy Gemini 1.5 Flash với Google Search...")
+            model = genai.GenerativeModel(
+                model_name='gemini-1.5-flash',
+                tools=[{"google_search_retrieval": {}}] 
+            )
+            response = model.generate_content(prompt)
+            final_report = response.text
+        except Exception as search_error:
+            # THỬ LẦN 2: Nếu Search lỗi, chạy chế độ thường để đảm bảo luôn có báo cáo
+            print(f"[!] Lỗi Search ({search_error}). Đang chuyển sang chế độ thường...")
+            model = genai.GenerativeModel(model_name='gemini-1.5-flash')
+            response = model.generate_content(prompt)
+            final_report = response.text + "\n\n*(Lưu ý: Báo cáo không dùng Search do giới hạn bản Free)*"
+
+        # Firewall thuật ngữ cưỡng chế (Dùng final_report đã thống nhất tên biến)
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính"
         }
         for old, new in replacements.items():
-            report_content = re.compile(re.escape(old), re.IGNORECASE).sub(new, report_content)
+            final_report = re.compile(re.escape(old), re.IGNORECASE).sub(new, final_report)
             
-        return report_content
+        return final_report
+        
     except Exception as e: 
-        return f"Lỗi hệ thống: {str(e)}"
+        return f"Lỗi hệ thống nghiêm trọng: {str(e)}"
 
 def send_email(markdown_content):
     """Email Executive Style: Tinh gọn và Quyền lực"""
@@ -85,7 +96,7 @@ def send_email(markdown_content):
     full_html = f"""
     <div style="font-family: 'Times New Roman', serif; max-width: 850px; margin: auto; border-top: 8px solid #002D62; padding: 40px; color: #1a1a1a;">
         <h1 style="color: #002D62; text-align: center;">BÁO CÁO: THUẬN LỢI VÀ KHÓ KHĂN NQ 171</h1>
-        <p style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 20px;">Strictly Confidential | For: Vũ Quang Phát[cite: 1]</p>
+        <p style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 20px;">Strictly Confidential | For: Vũ Quang Phát</p>
         <div style="line-height: 1.8; text-align: justify;">{html_body}</div>
         <div style="margin-top: 50px; text-align: center; font-size: 11px; color: #888;">AI Strategic Advisor System | Gemini Hybrid Logic</div>
     </div>
