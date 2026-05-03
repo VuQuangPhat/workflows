@@ -1,157 +1,120 @@
-import os
-import re
-import smtplib
-import feedparser
-import markdown
-import pytz
+import os, re, smtplib, feedparser, markdown, pytz
 from datetime import datetime
 import google.generativeai as genai
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def get_real_estate_news():
-    """Thu thập dữ liệu đầu vào - Tập trung 100% vào Đầu tư & Pháp lý dự án"""
+    """LỌC TIN TINH HOA: Chỉ lấy các nguồn tác động đến Pháp lý & Đầu tư dự án"""
     sources = {
         "Chính phủ - Pháp luật": "https://baochinhphu.vn/rss/phap-luat.rss",
         "Báo Đấu Thầu - Dự án": "https://baodauthau.vn/rss/phap-luat-16.rss",
-        "Kinh tế (Tuổi Trẻ)": "https://tuoitre.vn/rss/kinh-doanh.rss",
-        "VN Business Law": "https://vietnam-business-law.info/feed",
         "Công Báo": "https://congbao.chinhphu.vn/rss"
     }
-    
     summary = ""
     for cat, url in sources.items():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
-            # Chỉ lấy tin trong 48h để tránh lỗi 'tiên tri' tin tức
-            for entry in feed.entries[:8]: 
-                desc = entry.get('summary', entry.get('description', ''))
-                clean_desc = re.sub('<[^<]+>', '', desc) 
-                short_desc = (clean_desc[:400] + '...') if len(clean_desc) > 400 else clean_desc
-                summary += f"Tiêu đề: {entry.title}\nTóm tắt: {short_desc}\nLink: {entry.link}\n\n"
-        except Exception as e:
-            print(f"Lỗi tải nguồn {cat}: {e}")
+            for entry in feed.entries[:6]: # Lấy 6 tin nóng nhất
+                desc = re.sub('<[^<]+>', '', entry.get('summary', ''))
+                summary += f"Tiêu đề: {entry.title}\nTóm tắt: {desc[:400]}...\nLink: {entry.link}\n\n"
+        except: continue
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI Cố vấn Pháp lý Cao cấp - Mastermind Edition"""
+    """KHỐI TƯ DUY CỐ VẤN: Đã nạp NQ 171 và Quy trình 11 bước của Vũ Quang Phát"""
     api_key = os.environ.get('GEMINI_API_KEY')
-    if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
+    if not api_key: return "Thiếu GEMINI_API_KEY trong Environment."
     
     genai.configure(api_key=api_key)
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
-    current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
+    current_time = datetime.now(tz_hcm).strftime("%H:%M - %d/%m/%Y")
     
-    # --- BỘ LỆNH CƯỠNG CHẾ (THE CONSTITUTION) ---
+    # --- ĐỊNH NGHĨA 'BỘ NÃO' CỐ VẤN ---
     prompt = f"""
-QUY TRÌNH XỬ LÝ ƯU TIÊN: Xác thực hiệu lực văn bản trước khi viết.
-THỜI GIAN HIỆN TẠI: {current_time}
+    CONTEXT: Today is {current_time}. You are the Senior Legal Advisor to expert Vũ Quang Phát.
+    ROLE: A high-level legal peer. Your goal is to assess risks and provide strategic solutions.
+    
+    INTERNAL KNOWLEDGE (Mandatory Baseline):
+    1. QUY TRÌNH 11 BƯỚC DỰ ÁN BĐS:
+       - Step 1: Khảo sát dự án.
+       - Step 2: Thỏa thuận nhận quyền sử dụng đất (Gom đất).
+       - Step 3: Chấp thuận chủ trương đầu tư.
+       - Step 4: Phê duyệt quy hoạch 1/500.
+       - Step 5-10: Các bước định giá đất, GPXD, thi công hạ tầng.
+       - Step 11: Thông báo đủ điều kiện bán hàng (Sales).
+       *Nhiệm vụ: Định vị tin tức hôm nay đang ảnh hưởng trực tiếp đến Step nào.*
+    
+    2. NGHỊ QUYẾT 171/2024/QH15 (Chìa khóa chiến lược):
+       - Cơ chế thí điểm cho phép nhận chuyển nhượng quyền sử dụng đất 'khác' (không phải đất ở) để làm dự án nhà ở thương mại.
+       - Đây là ưu thế tuyệt đối để xử lý các dự án đang kẹt tại Step 2 và Step 3.
 
-1. DANH MỤC CSPL BẮT BUỘC (CẤM SAI LỆCH):
-- Luật Đất đai 2024 (31/2024/QH15): Hiệu lực 01/08/2024.
-- Nghị quyết 171/2024/QH15: Cơ chế thí điểm gom đất thực hiện dự án nhà ở thương mại.
-- Luật Kinh doanh BĐS 2023 (29/2023/QH15): Hiệu lực 01/08/2024.
-- Luật Nhà ở 2023 (27/2023/QH15): Hiệu lực 01/08/2024.
+    STRICT GUIDELINES:
+    - KHÔNG meta-talk: Không viết 'Tôi đã đọc', 'Tôi lọc tin'. Nhảy thẳng vào phân tích.
+    - KHÔNG hàn lâm: Sử dụng thuật ngữ chuyên môn (Holding cost, Project, Sales, Ownership) tự nhiên, không giải thích.
+    - PHÁP LÝ THỰC TẾ 2026: Luật Đất đai 2024, Kinh doanh BĐS 2023 đều đã vận hành từ 01/08/2024. Hãy tư vấn dựa trên trạng thái thực thi hiện hành.
 
-2. VAI TRÒ & PHẠM VI:
-Bạn là Cố vấn cấp cao tham mưu cho Chuyên gia Vũ Quang Phát. 
-PHẠM VI: Chỉ tập trung vòng đời đầu tư dự án (Survey, Land Acquisition, NQ 171, Approval, 1/500, Valuation, Permit, Sales).
-CẤM TUYỆT ĐỐI: Tin tức vận hành (điện, nước, nhà trọ), nông sản, du lịch. Nếu dữ liệu thô có tin này, PHẢI LOẠI BỎ NGAY.
+    CẤU TRÚC BÁO CÁO:
+    1. ĐÁNH GIÁ TRỌNG TÂM: Tin tức nào tác động mạnh nhất đến Step nào trong quy trình 11 bước?
+    2. PHÂN TÍCH ƯU & KHUYẾT (NQ 171 Perspective): 
+       - Ưu điểm để đẩy nhanh tiến độ dự án.
+       - Khuyết điểm/Rủi ro về chi phí vốn (Holding cost) hoặc rào cản tại các Sở ban ngành.
+    3. CHIẾN THUẬT THÁO GỠ (Action Plan 1:1): Các bước đi cụ thể cho Vũ Quang Phát để làm việc với đối tác hoặc cơ quan nhà nước.
 
-3. NGUYÊN TẮC PHẢN HỒI:
-- Không giải thích luật dông dài kiểu hàn lâm. Đi thẳng vào CHIẾN THUẬT tháo gỡ điểm nghẽn.
-- Sử dụng mô hình IRAC (Issue - Rule - Application - Conclusion) cho mọi nút thắt.
-- Conclusion (Kết luận) PHẢI là một Action Plan (Kế hoạch hành động) 1:1 cho chuyên gia.
-- Ngôn ngữ: Tiếng Việt chuyên ngành + Tiếng Anh trình độ B1 (Project, Permit, Deposit, Ownership).
-
-4. ĐỊA GIỚI HÀNH CHÍNH (HẬU 2025):
-Bình Dương, BR-VT thuộc TP.HCM. Dùng đúng tên: Sở Nông nghiệp và Môi trường (Đất đai), Sở Tài chính (Định giá đất), Sở Xây dựng.
-
-DỮ LIỆU ĐẦU VÀO: {news_data}
-"""
+    DATA: {news_data}
+    """
 
     try:
-        # Cơ chế quét chọn model tự động để tránh lỗi 404
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        models_to_try = sorted(available_models, key=lambda x: (0 if 'pro' in x else (1 if 'flash' in x else 2)))
+        # Tự động chọn Model cao cấp nhất
+        models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        best_model = next((m for m in models if "pro" in m), models[0])
         
-        raw_report = "AI Generation Failed."
-        for model_name in models_to_try:
-            try:
-                if "1.0" in model_name: continue 
-                model = genai.GenerativeModel(model_name)
-                response = model.generate_content(prompt)
-                raw_report = response.text
-                break
-            except: continue
+        model = genai.GenerativeModel(best_model)
+        response = model.generate_content(prompt)
+        report = response.text
                 
-        # Bộ lọc Firewall Python cưỡng chế thuật ngữ
+        # Firewall Python: Chuẩn hóa thuật ngữ hành chính TP.HCM 2025
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
-            "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
             "Sở Kế hoạch và Đầu tư": "Sở Tài chính",
-            "Sở KH&ĐT": "Sở Tài chính",
-            "UBND quận": "UBND TP.HCM/Thành phố trực thuộc",
-            "tỉnh Bình Dương": "TP.HCM",
-            "tỉnh Bà Rịa": "TP.HCM"
+            "tỉnh Bình Dương": "TP.HCM", "tỉnh Bà Rịa": "TP.HCM"
         }
-        cleaned_report = raw_report
         for old, new in replacements.items():
-            cleaned_report = re.compile(re.escape(old), re.IGNORECASE).sub(new, cleaned_report)
-            
-        return cleaned_report
-    except Exception as e:
-        return f"System Error: {str(e)}"
+            report = re.compile(re.escape(old), re.IGNORECASE).sub(new, report)
+        return report
+    except Exception as e: return f"AI Error: {str(e)}"
 
 def send_email(markdown_content):
-    """Gửi Email với phong cách Executive tham mưu cao cấp"""
+    """GỬI EMAIL: Giao diện Memo mật của Cố vấn cấp cao"""
     sender = "phat.clover@gmail.com"
     pwd = os.environ.get('GMAIL_PASSWORD')
-    run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
     
     msg = MIMEMultipart()
-    msg["Subject"] = f"[THAM MƯU CHIẾN LƯỢC] DỰ ÁN & MỞ BÁN #{run_num}"
+    msg["Subject"] = f"[LEGAL STRATEGY] BÁO CÁO THAM MƯU #{datetime.now().strftime('%d%m')}"
     msg["From"] = f"Senior Advisor <{sender}>"
     msg["To"] = sender
     
-    html_body = markdown.markdown(markdown_content, extensions=['extra', 'nl2br', 'tables'])
-    
+    html_body = markdown.markdown(markdown_content, extensions=['extra', 'tables', 'nl2br'])
     full_html = f"""
-    <html>
-      <head>
-        <style>
-            body {{ font-family: 'Times New Roman', Times, serif; background-color: #f4f4f4; padding: 20px; line-height: 1.6; color: #1a1a1a; }}
-            .container {{ max-width: 900px; margin: 0 auto; background: #fff; padding: 40px; border-top: 10px solid #002D62; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }}
-            h1 {{ color: #002D62; text-align: center; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 15px; font-size: 24px; }}
-            h2 {{ color: #002D62; border-left: 5px solid #002D62; padding-left: 10px; margin-top: 30px; font-size: 19px; background: #f9f9f9; }}
-            h3 {{ color: #8B0000; font-size: 17px; font-weight: bold; }}
-            p, li {{ text-align: justify; font-size: 16px; }}
-            table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-            table, th, td {{ border: 1px solid #ccc; padding: 12px; text-align: left; }}
-            th {{ background-color: #f2f2f2; font-weight: bold; }}
-            .footer {{ text-align: center; font-size: 11px; color: #777; margin-top: 40px; border-top: 1px solid #eee; padding-top: 10px; }}
-        </style>
-      </head>
-      <body>
-        <div class="container">
-            <h1>BÁO CÁO THAM MƯU PHÁP LÝ DỰ ÁN BĐS</h1>
-            <p style="text-align: center;">Thực hiện riêng cho chuyên gia: <strong>Vũ Quang Phát</strong></p>
-            <div class="content">{html_body}</div>
-            <div class="footer">Tài liệu lưu hành nội bộ - Bảo mật cao | Vận hành bởi Gemini API</div>
+    <div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: auto; border-top: 10px solid #002D62; padding: 45px; background: #fff; color: #1a1a1a;">
+        <h1 style="color: #002D62; text-align: center; text-transform: uppercase; font-size: 24px;">Memo: Tham mưu chiến lược dự án</h1>
+        <p style="text-align: center; font-style: italic; color: #666; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+            Strictly Confidential | Dành riêng cho chuyên gia Vũ Quang Phát
+        </p>
+        <div style="line-height: 1.8; text-align: justify; font-size: 16px;">{html_body}</div>
+        <div style="margin-top: 50px; text-align: center; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 20px;">
+            Hệ thống Cố vấn Chiến lược tự động | Cấu trúc bởi NQ 171 & Quy trình 11 bước của Chuyên gia.
         </div>
-      </body>
-    </html>
+    </div>
     """
     msg.attach(MIMEText(full_html, "html", "utf-8"))
-    
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, pwd)
             server.sendmail(sender, sender, msg.as_string())
-        print("Báo cáo tham mưu cao cấp đã được gửi!")
-    except Exception as e:
-        print(f"Lỗi gửi email: {e}")
+        print("Báo cáo chiến lược đã được gửi thành công.")
+    except Exception as e: print(f"Email Error: {e}")
 
 if __name__ == "__main__":
     news = get_real_estate_news()
