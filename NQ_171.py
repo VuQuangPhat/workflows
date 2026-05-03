@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def get_real_estate_news():
-    """Thu thập dữ liệu đầu vào (Cập nhật liên tục)"""
+    """Thu thập dữ liệu đầu vào từ các nguồn tin tức pháp luật & kinh tế trọng điểm"""
     sources = {
         "Chính phủ": "https://baochinhphu.vn/rss/phap-luat.rss",
         "Kinh tế (Tuổi Trẻ)": "https://tuoitre.vn/rss/kinh-doanh.rss",
@@ -25,7 +25,7 @@ def get_real_estate_news():
         try:
             feed = feedparser.parse(url)
             summary += f"\n--- NGUỒN: {cat.upper()} ---\n"
-            for entry in feed.entries[:6]: 
+            for entry in feed.entries[:7]: 
                 desc = entry.get('summary', entry.get('description', ''))
                 clean_desc = re.sub('<[^<]+>', '', desc) 
                 short_desc = (clean_desc[:350] + '...') if len(clean_desc) > 350 else clean_desc
@@ -36,7 +36,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data):
-    """Trợ lý AI Cố vấn Pháp lý Cao cấp - Tích hợp IRAC & Tư duy linh hoạt"""
+    """Trợ lý AI Cố vấn Pháp lý - Phiên bản Mở rộng & Linh hoạt"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu GEMINI_API_KEY."
     
@@ -46,44 +46,41 @@ def get_ai_report(news_data):
     current_time = datetime.now(tz_hcm).strftime("%H:%M:%S - Ngày %d/%m/%Y")
     
     prompt = f"""
-Bạn là một Cố vấn Pháp lý cao cấp với tư duy phân tích sắc bén, hỗ trợ trực tiếp cho chuyên gia pháp lý Vũ Quang Phát. Nhiệm vụ của bạn là cung cấp các giải pháp pháp lý chính xác, thực tế và có tính ứng dụng cao.
+QUY TRÌNH XỬ LÝ ƯU TIÊN: Đối với mọi truy vấn liên quan đến văn bản pháp luật, địa danh hành chính hoặc quy trình thủ tục, bạn PHẢI quét xác thực trạng thái hiệu lực hiện hành và các thay đổi mới nhất trước khi soạn thảo phản hồi. Tuyệt đối không sử dụng kiến thức cũ nếu có thông tin mới hơn.   
 
-THỜI GIAN LẬP BÁO CÁO: {current_time}
+THỜI GIAN CẬP NHẬT: {current_time}
 
-QUY TRÌNH XỬ LÝ & NGUYÊN TẮC CỐT LÕI (TUÂN THỦ 100%):
-1. BỘ LỌC TIN TỨC: Tuyệt đối bỏ qua các tin tức vĩ mô không liên quan trực tiếp đến BĐS (ví dụ: xuất khẩu gạo, thuế vãng lai nhỏ lẻ). Chỉ giữ lại tin tác động đến quy hoạch, đền bù, giá đất, thủ tục đầu tư.
-2. SỰ LINH HOẠT TỰ CHỦ: Không dùng một quy trình cố định. Hãy tự do chia nội dung phân tích thành các "bước" hoặc "vấn đề trọng tâm" tùy thuộc vào luồng dữ liệu đầu vào của ngày hôm nay.
-3. ĐỘ SÂU CHUYÊN MÔN: Không chỉ trích dẫn điều khoản. Phải giải thích "bản chất pháp lý", "ý đồ nhà lập pháp" và "hệ quả thực tế". Không tự suy diễn (hallucination) nếu văn bản chưa rõ ràng.
-4. NGÔN NGỮ: Tiếng Việt chuyên ngành tinh gọn (dùng Bullet points/Bảng). Thuật ngữ tiếng Anh GIỚI HẠN NGHIÊM NGẶT ở trình độ B1 (VD: Deposit, Lease, Permit, Ownership, Project). Không dùng từ C1/C2.
-5. BỐI CẢNH ĐỊA LÝ & HÀNH CHÍNH (Sau sáp nhập NQ 202/2025): Bình Dương, BR-VT thuộc TP.HCM. Bắt buộc dùng: UBND TP.HCM, Sở Nông nghiệp và Môi trường (phụ trách đất đai/nguồn gốc), Sở Tài chính (định giá đất).
+1. Vai trò và Bản sắc:
+Bạn là một Cố vấn Pháp lý cao cấp với tư duy phân tích sắc bén, làm việc trực tiếp với tôi. Nhiệm vụ của bạn là cung cấp các giải pháp pháp lý chính xác, thực tế và có tính ứng dụng cao. Bỏ qua các định nghĩa cơ bản, đi thẳng vào chiến thuật tháo gỡ.
+
+2. Nguyên tắc cốt lõi về Nội dung:
+- Ma trận pháp lý mở rộng: Không chỉ bó hẹp ở Luật Đất đai. Bắt buộc rà soát liên thông các văn bản liên quan (Luật Đầu tư, Xây dựng, Quy hoạch, Kinh doanh BĐS, Môi trường) để tìm hướng mở.
+- Văn bản hiện hành: Luôn kiểm tra và chỉ sử dụng các văn bản đang có hiệu lực tại thời điểm truy vấn. Nếu văn bản đã hết hiệu lực hoặc đang trong giai đoạn chuyển tiếp, phải phân tích rõ sự khác biệt giữa quy định cũ và mới.
+- Độ sâu chuyên môn: Không dừng lại ở việc trích dẫn điều khoản. Phải giải thích được "bản chất pháp lý", "ý đồ của nhà lập pháp" và "hệ quả thực tế" của quy định đó.
+- NQ 171 và Pháp lý BĐS: Đặc biệt am hiểu về quy trình gỡ vướng dự án từ lúc gom đất đến khi ra sản phẩm, các nghị quyết về điều phối phát triển vùng (như NQ 171) và các thủ tục hành chính tại khu vực phía Nam.
+
+3. Quy tắc phản hồi:
+- Ngắn gọn & Tinh gọn: Đi thẳng vào vấn đề. Sử dụng Bullet points và Bảng so sánh để tối ưu hóa việc đọc nhanh. Tránh các câu dẫn rườm rà.
+- Ngôn ngữ: Sử dụng tiếng Việt chuyên ngành pháp lý chuẩn xác. Đối với các thuật ngữ tiếng Anh, GIỚI HẠN TUYỆT ĐỐI ở trình độ B1 (Ví dụ: Project, Permit, Deposit, Lease, Ownership).
+- Phân tích rủi ro: Luôn kèm theo một phần đánh giá ngắn về rủi ro pháp lý hoặc các điểm "mờ" trong quy định có thể gây khó khăn khi triển khai thực tế.
+
+4. Cấu trúc phản hồi linh hoạt (Dynamic Structure):
+- KHÔNG sử dụng cấu trúc cố định. Hãy tự động đánh giá dữ liệu đầu vào để chia nội dung thành các bước xử lý, giai đoạn dự án hoặc nhóm vấn đề trọng tâm cho phù hợp.
+- BẮT BUỘC áp dụng mô hình IRAC (Issue - Rule - Application - Conclusion) cho các phân tích điểm nghẽn (ví dụ: vướng mắc thỏa thuận đất theo NQ 171). Phần Conclusion phải là giải pháp thực chiến 1:1, không đề xuất chung chung.
+- Đảm bảo có phần liệt kê nhanh Căn cứ pháp lý (Số hiệu, Ngày ban hành, Trạng thái hiệu lực) ở đầu báo cáo.
+
+5. Điều khoản cấm:
+- Không được Hallucination (ảo giác): Nếu không tìm thấy văn bản hoặc quy định chưa rõ ràng, phải nêu rõ là "chưa có quy định cụ thể" thay vì tự suy diễn.
+- Không sử dụng ngôn ngữ quá thân mật hoặc quá sáo rỗng.
+- CẤM sai lệch địa giới hành chính (Hậu 01/07/2025): Bình Dương, BR-VT thuộc TP.HCM. Bắt buộc dùng: UBND TP.HCM, Sở Nông nghiệp và Môi trường, Sở Tài chính, Sở Xây dựng.
 
 DỮ LIỆU ĐẦU VÀO TỪ BÁO CHÍ HÔM NAY:
 {news_data}
-
-CẤU TRÚC PHẢN HỒI MẶC ĐỊNH (Sử dụng Markdown chuyên nghiệp):
-* [Dòng 1] "Cập nhật dữ liệu lúc: {current_time}"
-
-### 1. CĂN CỨ PHÁP LÝ HIỆN HÀNH
-- Danh mục văn bản đang có hiệu lực (hoặc dự thảo) liên quan trực tiếp đến tin tức (Số hiệu, Ngày ban hành, Trạng thái hiệu lực). Phân tích rõ khác biệt nếu đang trong giai đoạn chuyển tiếp.
-
-### 2. NỘI DUNG PHÂN TÍCH CHUYÊN SÂU (TỰ ĐỘNG CHIA NHÓM VẤN ĐỀ)
-- Lựa chọn các điểm nóng nhất từ dữ liệu và tự đặt tiêu đề phân tích.
-- [BẮT BUỘC ĐỐI VỚI VƯỚNG MẮC NQ 171]: Trình bày theo mô hình IRAC:
-  + I - Issue (Vấn đề)
-  + R - Rule (Quy định)
-  + A - Application (Áp dụng/Hệ quả thực tế)
-  + C - Conclusion (Kết luận & Giải pháp Cố vấn 1:1)
-
-### 3. LƯU Ý THỰC THI & RỦI RO PHÁP LÝ
-- Đánh giá ngắn gọn rủi ro hoặc các điểm "mờ" trong quy định có thể làm đình trệ dự án.
-
-### 4. GỢI Ý BƯỚC TIẾP THEO & TỪ VỰNG B1
-- Đề xuất hành động lập tức cho bộ phận pháp lý.
-- Cung cấp 5 từ vựng B1 + 1 Idiom thương mại.
 """
 
     try:
         available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        # Ưu tiên model Pro cho tư duy pháp lý phức tạp
         models_to_try = sorted(available_models, key=lambda x: (0 if 'pro' in x else (1 if 'flash' in x else 2)))
         
         raw_report = "AI Generation Failed."
@@ -98,7 +95,7 @@ CẤU TRÚC PHẢN HỒI MẶC ĐỊNH (Sử dụng Markdown chuyên nghiệp):
                 print(f"Lỗi khi thử model {model_name}: {e}")
                 continue
                 
-        # --- BỘ LỌC TỪ KHÓA BẮT BUỘC ---
+        # --- BỘ LỌC TỪ KHÓA ÉP BUỘC ĐỊA GIỚI/CƠ QUAN ---
         replacements = {
             "Sở Tài nguyên và Môi trường": "Sở Nông nghiệp và Môi trường",
             "Sở TN&MT": "Sở Nông nghiệp và Môi trường",
@@ -109,7 +106,8 @@ CẤU TRÚC PHẢN HỒI MẶC ĐỊNH (Sử dụng Markdown chuyên nghiệp):
             "Ủy ban nhân dân quận": "UBND TP.HCM",
             "UBND Quận": "UBND TP.HCM",
             "tỉnh Bình Dương": "TP.HCM",
-            "tỉnh Bà Rịa": "TP.HCM"
+            "tỉnh Bà Rịa": "TP.HCM",
+            "tỉnh Bà Rịa - Vũng Tàu": "TP.HCM"
         }
         
         cleaned_report = raw_report
@@ -123,7 +121,7 @@ CẤU TRÚC PHẢN HỒI MẶC ĐỊNH (Sử dụng Markdown chuyên nghiệp):
         return f"System Error: {str(e)}"
 
 def send_email(markdown_content):
-    """Gửi Email với giao diện Báo cáo Tham mưu"""
+    """Gửi Email Báo cáo Tham mưu Pháp lý Nội bộ"""
     sender = "phat.clover@gmail.com"
     pwd = os.environ.get('GMAIL_PASSWORD')
     run_num = os.environ.get('GITHUB_RUN_NUMBER', '0')
@@ -139,16 +137,16 @@ def send_email(markdown_content):
     <html>
       <head>
         <style>
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 25px; line-height: 1.6; color: #1c1e21; }}
-            .container {{ max-width: 900px; margin: 0 auto; background: #ffffff; padding: 45px; border-top: 8px solid #0056b3; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border-radius: 8px; }}
-            h1 {{ color: #0056b3; text-align: left; font-size: 24px; border-bottom: 2px solid #e4e6eb; padding-bottom: 15px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }}
-            h2 {{ color: #004085; border-left: 5px solid #0056b3; padding-left: 12px; margin-top: 35px; font-size: 19px; background-color: #eef3f8; padding-top: 8px; padding-bottom: 8px; }}
-            h3 {{ color: #b02a37; font-size: 17px; margin-top: 20px; font-weight: 600; }}
-            p, li {{ text-align: left; margin-bottom: 12px; font-size: 15px; }}
-            table {{ width: 100%; border-collapse: collapse; margin: 25px 0; }}
-            table, th, td {{ border: 1px solid #ced4da; padding: 14px; text-align: left; font-size: 14.5px; }}
-            th {{ background-color: #e9ecef; color: #212529; font-weight: 700; text-transform: uppercase; font-size: 13px; }}
-            .footer {{ text-align: left; font-size: 13px; color: #6c757d; margin-top: 45px; border-top: 1px solid #dee2e6; padding-top: 20px; font-weight: 500; }}
+            body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 20px; line-height: 1.6; color: #2c3e50; }}
+            .container {{ max-width: 920px; margin: 0 auto; background: #ffffff; padding: 40px; border-top: 6px solid #1a5276; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 6px; }}
+            h1 {{ color: #1a5276; text-align: left; font-size: 22px; border-bottom: 2px solid #ecf0f1; padding-bottom: 12px; margin-bottom: 20px; text-transform: uppercase; }}
+            h2 {{ color: #2471a3; border-left: 4px solid #2980b9; padding-left: 10px; margin-top: 30px; font-size: 18px; }}
+            h3 {{ color: #c0392b; font-size: 16px; margin-top: 15px; font-weight: bold; }}
+            p, li {{ text-align: justify; margin-bottom: 10px; font-size: 15px; }}
+            table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            table, th, td {{ border: 1px solid #bdc3c7; padding: 12px; text-align: left; font-size: 14px; }}
+            th {{ background-color: #ecf0f1; color: #2c3e50; font-weight: bold; text-transform: uppercase; }}
+            .footer {{ text-align: left; font-size: 12px; color: #7f8c8d; margin-top: 40px; border-top: 1px solid #ecf0f1; padding-top: 15px; font-style: italic; }}
         </style>
       </head>
       <body>
