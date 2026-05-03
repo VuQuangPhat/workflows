@@ -23,7 +23,7 @@ def get_real_estate_news():
     return summary
 
 def get_ai_report(news_data, project_status):
-    """LÕI TƯ DUY V12: TRUY VẤN ĐA TẦNG & TỰ KIỂM CHỨNG LỖI"""
+    """LÕI TƯ DUY V13: TỰ ĐỘNG KHẮC PHỤC LỖI 404 & SEARCH THỜI GIAN THỰC"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Thiếu API Key."
     
@@ -31,63 +31,62 @@ def get_ai_report(news_data, project_status):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M - %d/%m/%Y")
     
-    # MASTER PROMPT V12: ÉP AI TỰ ĐIỀU CHỈNH KIẾN THỨC SAI LỆCH
+    # PROMPT ÉP AI PHẢI TỰ KIỂM CHỨNG LẠI KIẾN THỨC CŨ
     prompt = f"""
-    CONTEXT: Today is {current_time}. Bạn là Senior Legal Advisor cho Vũ Quang Phát.
-    Nhiệm vụ: Cung cấp báo cáo tham mưu TUYỆT ĐỐI CHÍNH XÁC về pháp lý BĐS 2026.
-
-    1. CẢNH BÁO KIẾN THỨC (MANDATORY):
-    - Kiểm chứng ngay Luật số 43/2024/QH15: Xác nhận Luật Đất đai, Nhà ở, Kinh doanh BĐS đã có hiệu lực từ 01/08/2024. TUYỆT ĐỐI KHÔNG dùng mốc 01/01/2025.
-    - Cập nhật bộ máy TP.HCM 2026: Ưu tiên dùng tên 'Sở Nông nghiệp và Môi trường' và 'Sở Tài chính' (thay cho Sở TN&MT và Sở KH&ĐT cũ).
-    - NQ 171: Phải là NQ 171/2024/QH15 (Cơ chế thí điểm nhận quyền SDĐ), KHÔNG nhầm với bản 2022.
-
-    2. DỮ LIỆU DỰ ÁN THỰC TẾ:
-    {project_status}
-
-    3. CẤU TRÚC BÁO CÁO (IRAC):
-    - [I] ISSUE: Điểm nóng thị trường soi chiếu trực tiếp vào vướng mắc của Hung Thinh, Saigonres, Hoa Sen.
-    - [R] RULE & REALITY: Dẫn luật (mốc 01/08/2024) + Phân tích 'Ý đồ nhà lập pháp' & 'Hệ quả thực tế'.
-    - [A] APPLICATION: Quy trình cụ thể tại Sở Nông nghiệp và Môi trường & Sở Tài chính cho từng DA.
-    - [C] CONCLUSION: Action Plan 1:1 với thời hạn thực thi (deadline) rõ ràng.
+    CONTEXT: Today is {current_time}. Bạn là Senior Legal Advisor cho chuyên gia Vũ Quang Phát.
     
-    - GLOSSARY: 05 từ vựng pháp lý B1.
+    MANDATORY GROUNDING RULES:
+    - SỬ DỤNG GOOGLE SEARCH để xác nhận: Luật số 43/2024/QH15 đã đẩy hiệu lực Luật Đất đai, Nhà ở, Kinh doanh BĐS lên ngày 01/08/2024. 
+    - TUYỆT ĐỐI KHÔNG sử dụng mốc 01/01/2025.
+    - XÁC THỰC tên các đơn vị hậu sáp nhập 2026 tại TP.HCM: Sở Nông nghiệp và Môi trường, Sở Tài chính.
+    - NQ 171: Áp dụng cơ chế thí điểm NQ 171/2024/QH15 cho các dự án nhà ở thương mại.
 
-    INPUT DATA: {news_data}
+    PROJECT CONTEXT: {project_status}
+    NEWS DATA: {news_data}
+
+    CẤU TRÚC BÁO CÁO (IRAC):
+    - [I] ISSUE: Phân tích điểm nóng ảnh hưởng đến danh mục dự án thực tế.
+    - [R] RULE & REALITY: Dẫn luật (mốc 01/08/2024) + Phân tích 'Ý đồ nhà lập pháp' & 'Hệ quả thực tế'.
+    - [A] APPLICATION: Quy trình cụ thể tại các Sở hậu sáp nhập.
+    - [C] CONCLUSION: Action Plan 1:1 cho chủ nhân với deadline cụ thể.
     """
 
+    final_report = "AI Generation Failed."
     try:
-        # Sử dụng Flash với Google Search để AI tự check lại mốc 01/08/2024
-        model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
-            tools=[{"google_search_retrieval": {}}]
-        )
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"Lỗi hệ thống: {str(e)}"
+        # TỰ ĐỘNG TÌM ĐÚNG MODEL ĐỂ TRÁNH LỖI 404
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        model_id = next((m for m in available_models if 'flash' in m), "gemini-1.5-flash")
+        
+        try:
+            # Thử chạy có Search[cite: 1]
+            model = genai.GenerativeModel(model_name=model_id, tools=[{"google_search_retrieval": {}}])
+            response = model.generate_content(prompt)
+            final_report = response.text
+        except:
+            # Fallback nếu Search bị chặn trên Free Tier[cite: 1]
+            model = genai.GenerativeModel(model_name=model_id)
+            response = model.generate_content(prompt)
+            final_report = response.text + "\n\n*(Lưu ý: Báo cáo dựa trên dữ liệu sẵn có, không dùng Google Search do giới hạn API)*"
+            
+        return final_report
+    except Exception as e: return f"Lỗi hệ thống nghiêm trọng: {str(e)}"
 
 def send_email(markdown_content):
-    """Cấu trúc Email Executive: Chữ to, Scannable, Đẳng cấp"""
+    """Email Executive Style: Chữ to rõ (18px), Scannable"""
     sender = "phat.clover@gmail.com"
     msg = MIMEMultipart()
-    msg["Subject"] = f"[TOP PRIORITY] THAM MƯU PHÁP LÝ DỰ ÁN & NQ 171 - #{datetime.now().strftime('%d%m')}"
+    msg["Subject"] = f"[TOP PRIORITY] THAM MƯU PHÁP LÝ & NQ 171 - #{datetime.now().strftime('%d%m')}"
     msg["From"] = f"Senior Advisor <{sender}>"
     msg["To"] = sender
     
     html_body = markdown.markdown(markdown_content, extensions=['extra', 'tables'])
-    
-    # CSS: Fix chữ nhỏ bằng font-size 18px cho body và 26px cho Header
     full_html = f"""
-    <div style="font-family: 'Times New Roman', Times, serif; max-width: 850px; margin: auto; border-top: 12px solid #002D62; padding: 50px; color: #1a1a1a; line-height: 1.8;">
-        <h1 style="color: #002D62; text-align: center; font-size: 28px; text-transform: uppercase;">Báo Cáo Tham Mưu Pháp Lý Tuần</h1>
-        <p style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; font-style: italic;">Srictly Confidential | For: Vũ Quang Phát</p>
-        
-        <div style="font-size: 18px; text-align: justify;">
-            {html_body}
-        </div>
-        
+    <div style="font-family: 'Times New Roman', serif; max-width: 850px; margin: auto; border-top: 12px solid #002D62; padding: 50px; color: #1a1a1a; line-height: 1.8;">
+        <h1 style="color: #002D62; text-align: center; font-size: 28px; text-transform: uppercase;">BÁO CÁO THAM MƯU PHÁP LÝ TUẦN</h1>
+        <p style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; font-style: italic;">Strictly Confidential | For: Vũ Quang Phát</p>
+        <div style="font-size: 18px; text-align: justify;">{html_body}</div>
         <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; font-size: 12px; color: #777;">
-            AI Strategic Advisor System | Gemini V12 Grounded | 2026 Legal Framework
+            AI Strategic Advisor System | Gemini V13 Grounded | 2026 Compliance
         </div>
     </div>
     """
@@ -96,17 +95,16 @@ def send_email(markdown_content):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, os.environ.get('GMAIL_PASSWORD'))
             server.sendmail(sender, sender, msg.as_string())
-        print("[+] Báo cáo đã được gửi với định dạng chuẩn.")
+        print("[+] Báo cáo đã được gửi thành công.")
     except Exception as e: print(f"[-] Email Error: {e}")
 
 if __name__ == "__main__":
-    # Danh mục dự án thực tế để AI soi chiếu
+    # --- DANH MỤC DỰ ÁN THỰC TẾ ---
     REAL_PROJECT_STATUS = """
-    - DA Hung Thinh: Đang nghẽn khâu thẩm định giá đất (phương pháp thặng dư) tại Sở Tài chính TP.HCM.
-    - DA Saigonres: Vướng thủ tục chuyển đổi 2ha đất nông nghiệp sang đất ở theo NQ 171/2024/QH15.
-    - DA Hoa Sen: Đang khảo sát pháp lý đấu giá tại Long An và Tiền Giang.
+    - DA Hung Thinh: Nghẽn thẩm định giá đất (thặng dư) tại Sở Tài chính TP.HCM.
+    - DA Saigonres: Vướng chuyển đổi 2ha đất nông nghiệp sang đất ở theo NQ 171/2024/QH15.
+    - DA Hoa Sen: Khảo sát đấu giá tại Long An và Tiền Giang.
     """
-    
     news = get_real_estate_news()
     report = get_ai_report(news, REAL_PROJECT_STATUS)
     send_email(report)
