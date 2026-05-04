@@ -25,12 +25,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5.4.0
         with:
-          python-version: '3.10'
+          # Đã nâng cấp lên 3.11 để đáp ứng tiêu chuẩn SDK mới của Google
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U google-generativeai feedparser markdown pytz
+          # Cập nhật SDK google-genai và bổ sung beautifulsoup4, requests
+          pip install -U google-genai beautifulsoup4 requests feedparser markdown pytz
 
       - name: Show environment info
         run: |
