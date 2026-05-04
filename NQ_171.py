@@ -1,102 +1,46 @@
-import os, re, smtplib, feedparser, markdown, pytz
-from datetime import datetime
-import google.generativeai as genai
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import requests
+from bs4 import BeautifulSoup
+import re
 
-def get_real_estate_news():
-    """Lọc nguồn tin tinh hoa pháp lý"""
-    sources = {
-        "Chính phủ - Pháp luật": "https://baochinhphu.vn/rss/phap-luat.rss",
-        "Báo Đấu Thầu - Dự án": "https://baodauthau.vn/rss/phap-luat-16.rss",
-        "Công Báo": "https://congbao.chinhphu.vn/rss"
+def get_admin_notices(url):
+    """
+    Module cào dữ liệu từ Cổng thông tin điện tử (Sở Nông nghiệp và Môi trường / UBND).
+    Tập trung vào các keyword phản ánh nút thắt của NQ 171.
+    """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
-    summary = ""
-    for cat, url in sources.items():
-        try:
-            feed = feedparser.parse(url)
-            summary += f"\n--- {cat.upper()} ---\n"
-            for entry in feed.entries[:6]:
-                desc = re.sub('<[^<]+>', '', entry.get('summary', ''))
-                summary += f"Tiêu đề: {entry.title}\nTóm tắt: {desc[:350]}...\nLink: {entry.link}\n\n"
-        except: continue
-    return summary
-
-def get_ai_report(news_data, project_status):
-    """LÕI TƯ DUY V14: KHẮC PHỤC LỖI QUOTA (429) & CHUẨN HÓA TRI THỨC"""
-    api_key = os.environ.get('GEMINI_API_KEY')
-    if not api_key: return "Thiếu API Key."
     
-    genai.configure(api_key=api_key)
-    tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
-    current_time = datetime.now(tz_hcm).strftime("%H:%M - %d/%m/%Y")
-    
-    # MASTER PROMPT: Tích hợp sẵn tri thức để AI không bị lệ thuộc hoàn toàn vào Search
-    prompt = f"""
-    CONTEXT: Today is {current_time}. Bạn là Senior Legal Advisor cho Vũ Quang Phát.
-    
-    LUẬT ĐỊNH HIỆN HÀNH (TRUTH DATA):
-    - Hiệu lực: Luật số 43/2024/QH15 khẳng định Luật Đất đai, Nhà ở, Kinh doanh BĐS có hiệu lực từ 01/08/2024.
-    - Cơ quan: Tại TP.HCM năm 2026, sử dụng 'Sở Nông nghiệp và Môi trường' và 'Sở Tài chính'.
-    - Cơ chế: Tập trung vào NQ 171/2024/QH15 (Thí điểm thỏa thuận nhận quyền SDĐ).
-
-    YÊU CẦU BÁO CÁO (IRAC):
-    1. ISSUE: Soi chiếu TIN TỨC với dự án thực tế: {project_status}.
-    2. RULE & REALITY: Phân tích 'Ý đồ nhà lập pháp' (triệt tiêu địa tô) & 'Hệ quả thực tế' (thận trọng thẩm định).
-    3. APPLICATION: Quy trình tích hợp tại Sở Nông nghiệp và Môi trường cho NQ 171.
-    4. ACTION PLAN: Giải pháp 1:1 cho Vũ Quang Phát kèm deadline.
-    """
-
     try:
-        # Tự động tìm model khả dụng để tránh lỗi 404
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        model_id = next((m for m in available_models if 'flash' in m), "gemini-1.5-flash")
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
         
-        model = genai.GenerativeModel(
-            model_name=model_id,
-            tools=[{"google_search_retrieval": {}}]
-        )
-        response = model.generate_content(prompt)
-        return response.text
-
-    except Exception as e:
-        if "429" in str(e):
-            return "THÔNG BÁO: Tài khoản Free Tier của bạn đã hết hạn mức 20 requests/ngày. Vui lòng thử lại sau hoặc nâng cấp API key."
-        return f"Lỗi hệ thống: {str(e)}"
-
-def send_email(markdown_content):
-    """UI/UX: Chữ to rõ (18px), Scannable, Đẳng cấp Senior"""
-    sender = "phat.clover@gmail.com"
-    msg = MIMEMultipart()
-    msg["Subject"] = f"[TOP PRIORITY] LEGAL STRATEGY REPORT - #{datetime.now().strftime('%d%m')}"
-    msg["From"] = f"Senior Advisor <{sender}>"
-    msg["To"] = sender
-    
-    html_body = markdown.markdown(markdown_content, extensions=['extra', 'tables'])
-    full_html = f"""
-    <div style="font-family: 'Times New Roman', serif; max-width: 850px; margin: auto; border-top: 12px solid #002D62; padding: 50px; color: #1a1a1a; line-height: 1.8;">
-        <h1 style="color: #002D62; text-align: center; font-size: 28px;">BÁO CÁO THAM MƯU PHÁP LÝ TUẦN</h1>
-        <p style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; font-style: italic;">Strictly Confidential | For: Vũ Quang Phát</p>
-        <div style="font-size: 18px; text-align: justify;">{html_body}</div>
-        <div style="margin-top: 60px; text-align: center; font-size: 11px; color: #888;">
-            AI Strategic Advisor | V14 Anti-Quota | 2026 Compliance Framework
-        </div>
-    </div>
-    """
-    msg.attach(MIMEText(full_html, "html", "utf-8"))
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender, os.environ.get('GMAIL_PASSWORD'))
-            server.sendmail(sender, sender, msg.as_string())
-        print("[+] Báo cáo đã gửi.")
-    except Exception as e: print(f"[-] Email Error: {e}")
-
-if __name__ == "__main__":
-    REAL_PROJECT_STATUS = """
-    - DA Hung Thinh: Nghẽn thẩm định giá (thặng dư) tại Sở Tài chính TP.HCM.
-    - DA Saigonres: Vướng chuyển đổi đất nông nghiệp theo NQ 171/2024/QH15.
-    - DA Hoa Sen: Khảo sát đấu giá tại Long An, Tiền Giang.
-    """
-    news = get_real_estate_news()
-    report = get_ai_report(news, REAL_PROJECT_STATUS)
-    send_email(report)
+        # LƯU Ý: Cần inspect phần tử web thực tế để đổi class_ cho phù hợp với website của Sở
+        articles = soup.find_all(['div', 'li'], class_=re.compile('article-item|news-item|list-item'))
+        
+        extracted_data = ""
+        # Các keyword lõi liên quan đến vướng mắc dự án thí điểm NQ 171
+        keywords = ["thí điểm", "nhà ở thương mại", "thỏa thuận nhận quyền", "chuyển mục đích", "danh mục khu đất", "trả hồ sơ"]
+        
+        count = 0
+        for article in articles:
+            title_tag = article.find('a')
+            if not title_tag: continue
+            
+            title = title_tag.text.strip()
+            link = title_tag.get('href', '')
+            if not link.startswith('http'): 
+                link = "https://[domain_của_Sở]" + link
+                
+            # Lọc tin tức rác, chỉ giữ tin có keyword pháp lý trọng điểm
+            if any(kw.lower() in title.lower() for kw in keywords):
+                extracted_data += f"- CẬP NHẬT MỚI: {title}\n  Link đối chiếu: {link}\n\n"
+                count += 1
+                
+            if count >= 5: break # Giới hạn lấy 5 tin sát sườn nhất
+            
+        return extracted_data if extracted_data else "Không phát hiện thông báo mới liên quan đến vướng mắc NQ 171."
+        
+    except requests.exceptions.RequestException as e:
+        return f"[-] Lỗi kết nối Cổng thông tin: {str(e)}"
