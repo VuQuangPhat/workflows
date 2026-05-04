@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from bs4 import BeautifulSoup
 from google import genai
-from google.genai import types # Import module types để cấu hình System Instruction
+from google.genai import types
 
 def get_real_estate_news():
     """Trích xuất tin tức pháp lý vĩ mô"""
@@ -59,7 +59,7 @@ def get_admin_notices(url):
         return f"[-] Lỗi quét Cổng thông tin: {str(e)}"
 
 def get_ai_report(news_data, admin_data, project_status):
-    """LÕI TƯ DUY: SYSTEM INSTRUCTION CHO BẢN FREE FLASH"""
+    """LÕI TƯ DUY: SYSTEM INSTRUCTION TÍCH HỢP GOOGLE SEARCH"""
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key: return "Lỗi: Thiếu API Key."
     
@@ -67,34 +67,37 @@ def get_ai_report(news_data, admin_data, project_status):
     tz_hcm = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time = datetime.now(tz_hcm).strftime("%H:%M - %d/%m/%Y")
     
-    # 1. TẦNG NÃO BỘ (SYSTEM INSTRUCTION): Chứa toàn bộ bản sắc và quy tắc
     sys_instruct = """
-    QUY TRÌNH XỬ LÝ ƯU TIÊN: Bạn là một Cố vấn Pháp lý cao cấp, hỗ trợ trực tiếp cho chuyên gia Vũ Quang Phát. Nhiệm vụ của bạn là phân tích dữ liệu đầu vào để đưa ra giải pháp pháp lý chính xác, thực tiễn và ứng dụng cao cho các dự án bất động sản.
-    1. Nguyên tắc cốt lõi về Nội dung (ANTI-HALLUCINATION):
-    - Dữ liệu tối thượng: CHỈ được phép đánh giá và trích dẫn dựa trên [TIN TỨC BÁO CHÍ], [THÔNG BÁO HÀNH CHÍNH] và [TRUTH DATA] được cung cấp.
-    - Giới hạn kiến thức: KHÔNG tự ý suy diễn hoặc viện dẫn các văn bản pháp luật không có trong dữ liệu đầu vào hoặc đã hết hiệu lực (như Luật Đất đai 2013, NĐ 43, 44, 47...). 
-    - Nếu thông tin đầu vào không đủ để kết luận, BẮT BUỘC phải ghi rõ: "Chưa có quy định/thông tin cụ thể để xác định".
-    - Đặc biệt am hiểu thủ tục hành chính tại TP.HCM, quy trình gỡ vướng pháp lý và cơ chế thí điểm theo NQ 171/2024/QH15 và NĐ 75/2025/NĐ-CP.
-
-    2. Độ sâu chuyên môn:
-    - Không chỉ liệt kê văn bản. Phải giải thích rõ "bản chất pháp lý", "ý đồ nhà lập pháp" và "hệ quả thực tế" tác động trực tiếp đến hiện trạng dự án.
-
+    QUY TRÌNH XỬ LÝ ƯU TIÊN: Đối với mọi truy vấn liên quan đến văn bản pháp luật, địa danh hành chính hoặc quy trình thủ tục, bạn PHẢI sử dụng công cụ Google Search để xác thực trạng thái hiệu lực hiện hành và các thay đổi mới nhất trước khi soạn thảo phản hồi. Tuyệt đối không sử dụng kiến thức cũ nếu kết quả tìm kiếm có thông tin mới hơn.   
+    
+    1. Vai trò và Bản sắc:
+    Bạn là một Cố vấn Pháp lý cao cấp với tư duy phân tích sắc bén, hỗ trợ trực tiếp cho một chuyên gia pháp lý am hiểu công nghệ. Nhiệm vụ của bạn là cung cấp các giải pháp pháp lý chính xác, thực tế và có tính ứng dụng cao.
+    
+    2. Nguyên tắc cốt lõi về Nội dung:
+    - Văn bản hiện hành: Luôn kiểm tra và chỉ sử dụng các văn bản quy phạm pháp luật đang có hiệu lực tại thời điểm truy vấn. Nếu văn bản đã hết hiệu lực hoặc đang trong giai đoạn chuyển tiếp (như Luật Đất đai, Nhà ở, Kinh doanh BĐS mới), phải phân tích rõ sự khác biệt giữa quy định cũ và mới.
+    - Độ sâu chuyên môn: Không dừng lại ở việc trích dẫn điều khoản. Phải giải thích được "bản chất pháp lý", "ý đồ của nhà lập pháp" và "hệ quả thực tế" của quy định đó.
+    - NQ 171 và Pháp lý BĐS: Đặc biệt am hiểu về quy trình gỡ vướng dự án, các nghị quyết về điều phối phát triển vùng (như NQ 171) và các thủ tục hành chính tại khu vực phía Nam.
+    
     3. Quy tắc phản hồi:
-    - Ngắn gọn & Tinh gọn: Đi thẳng vấn đề. Sử dụng Bullet points để tối ưu hóa việc đọc nhanh (scannable).
-    - Ngôn ngữ: Sử dụng tiếng Việt chuyên ngành pháp lý sắc bén, khách quan. Đối với thuật ngữ tiếng Anh, giới hạn ở mức B1. Tuyệt đối KHÔNG dùng từ ngữ sáo rỗng, hô khẩu hào.
-
-    4. Cấu trúc phản hồi BẮT BUỘC (Phải dùng chính xác các Heading này):
+    - Ngắn gọn & Tinh gọn: Đi thẳng vào vấn đề. Sử dụng Bullet points và Bảng so sánh để tối ưu hóa việc đọc nhanh. Tránh các câu dẫn rườm rà.
+    - Ngôn ngữ: Sử dụng tiếng Việt chuyên ngành pháp lý chuẩn xác. Đối với các thuật ngữ tiếng Anh, giới hạn ở trình độ B1 (trừ trường hợp là thuật ngữ pháp lý quốc tế bắt buộc).
+    - Phân tích rủi ro: Luôn kèm theo một phần đánh giá ngắn về rủi ro pháp lý hoặc các điểm "mờ" trong quy định có thể gây khó khăn khi triển khai thực tế.
+    
+    4. Cấu trúc phản hồi mặc định:
     ### Căn cứ pháp lý
-    (Liệt kê văn bản hiện hành: Số hiệu, Ngày ban hành. Chỉ lấy từ Truth Data).
+    (Danh mục các văn bản hiện hành: Số hiệu, Ngày ban hành, Trạng thái hiệu lực).
     ### Nội dung phân tích chuyên sâu
-    (Giải đáp trực tiếp, soi chiếu luật vào vướng mắc thực tế của dự án).
+    (Giải đáp trực tiếp yêu cầu của người dùng).
     ### Lưu ý thực thi / Rủi ro
-    (Đánh giá các rủi ro pháp lý, điểm "mờ", đặc biệt là rủi ro đàm phán giải phóng mặt bằng, nghĩa vụ tài chính).
+    (Các điểm cần đặc biệt cẩn trọng).
     ### Gợi ý bước tiếp theo
-    (Đề xuất hành động 1:1, ngắn gọn, có mốc thời gian/deadline nếu cần).
+    (Nếu cần thiết).
+    
+    5. Điều khoản cấm:
+    - Không được Hallucination (ảo giác): Nếu không tìm thấy văn bản hoặc quy định chưa rõ ràng, phải nêu rõ là "chưa có quy định cụ thể" thay vì tự suy diễn.
+    - Không sử dụng ngôn ngữ quá thân mật hoặc quá sáo rỗng.
     """
 
-    # 2. TẦNG DỮ LIỆU (USER PROMPT): Chỉ chứa context thay đổi hàng ngày
     user_prompt = f"""
     CONTEXT: Today is {current_time}.
     
@@ -103,21 +106,20 @@ def get_ai_report(news_data, admin_data, project_status):
     [THÔNG BÁO HÀNH CHÍNH]: {admin_data}
     [THỰC TRẠNG DỰ ÁN]: {project_status}
     
-    Hãy xuất báo cáo theo đúng cấu trúc và quy tắc đã được nạp.
+    Hãy xuất báo cáo theo đúng cấu trúc và quy tắc đã được nạp. Nhớ xác thực trạng thái văn bản qua Search.
     """
 
     try:
-        # Tự động fetch model flash free mới nhất
         available_models = [m.name for m in client.models.list()]
         model_id = next((m for m in available_models if 'flash' in m), 'gemini-1.5-flash')
         
-        # Cấu hình tham số kiểm soát ảo giác
         response = client.models.generate_content(
             model=model_id,
             contents=user_prompt,
             config=types.GenerateContentConfig(
                 system_instruction=sys_instruct,
-                temperature=0.1, # Ép model trả lời logic, khô khan, chuẩn pháp lý thay vì sáng tạo
+                temperature=0.1, 
+                tools=[{"google_search": {}}] # BẬT CHỨC NĂNG TÌM KIẾM WEB CHO AI
             )
         )
         return response.text
@@ -140,7 +142,7 @@ def send_email(markdown_content):
         <p style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; font-style: italic;">Strictly Confidential | Prepared for: Vũ Quang Phát</p>
         <div style="font-size: 18px; text-align: justify;">{html_body}</div>
         <div style="margin-top: 60px; text-align: center; font-size: 11px; color: #888;">
-            AI Flash Free Tier | Strict Mode Enabled | Compliance Framework 2026
+            AI Flash Free Tier | Google Search Grounding Enabled | Compliance Framework 2026
         </div>
     </div>
     """
@@ -155,11 +157,14 @@ def send_email(markdown_content):
 
 if __name__ == "__main__":
     TARGET_URL = "https://donvi.tphcm.gov.vn/thong-bao" 
-    REAL_PROJECT_STATUS = """
-    - DA Hung Thinh: Nghẽn thẩm định giá (thặng dư) tại Sở Tài chính TP.HCM.
-    - DA Saigonres: Vướng chuyển đổi đất nông nghiệp theo NQ 171/2024/QH15. Chưa chốt được giá đền bù với 15% hộ dân còn lại.
-    - DA Hoa Sen: Khảo sát đấu giá tại Long An, Tiền Giang.
-    """
+    
+    # Đọc dữ liệu đầu vào linh hoạt từ file .txt
+    project_file_path = "project_status.txt"
+    if os.path.exists(project_file_path):
+        with open(project_file_path, "r", encoding="utf-8") as file:
+            REAL_PROJECT_STATUS = file.read().strip()
+    else:
+        REAL_PROJECT_STATUS = "Chưa có dữ liệu dự án cụ thể. Vui lòng phân tích tổng quan các điểm mới nhất về NQ 171."
     
     news = get_real_estate_news()
     admin_notices = get_admin_notices(TARGET_URL)
